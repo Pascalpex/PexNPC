@@ -1,0 +1,28 @@
+name: Build PexNPC
+
+on: [ push, pull_request ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+    - uses: actions/checkout@v3.5.3
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3.11.0
+      with:
+        java-version: 17.0.7
+        distribution: 'temurin'
+
+    - name: Build with Maven
+      run: mvn -B package --file pom.xml
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3.1.2
+      with:
+        name: PexNPC
+        path: target/PexNPC-1.14.jar
