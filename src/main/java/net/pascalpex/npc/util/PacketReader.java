@@ -15,10 +15,7 @@ import org.bukkit.craftbukkit.v1_20_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class PacketReader {
 
@@ -39,20 +36,25 @@ public class PacketReader {
             return;
         }
 
-        channel.pipeline().addAfter("decoder", "PacketInjector", new MessageToMessageDecoder<ServerboundInteractPacket>() {
+        try {
+            channel.pipeline().addAfter("decoder", "PacketInjector", new MessageToMessageDecoder<ServerboundInteractPacket>() {
 
-            @Override
-            protected void decode(ChannelHandlerContext channel, ServerboundInteractPacket packet, List<Object> arg) throws Exception {
-                    arg.add(packet);
-                    readPacket(player, packet);
-            }
+                @Override
+                protected void decode(ChannelHandlerContext channel, ServerboundInteractPacket packet, List<Object> arg) {
+                        arg.add(packet);
+                        readPacket(player, packet);
+                }
 
-        });
+            });
+        } catch (NoSuchElementException ignored) {} // Player is no longer online
 
     }
 
     public void uninject(Player player) {
         channel = channels.get(player.getUniqueId());
+        if(channel == null) {
+            return;
+        }
         if(channel.pipeline().get("PacketInjector") != null) {
             channel.pipeline().remove("PacketInjector");
         }
