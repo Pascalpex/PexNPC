@@ -7,11 +7,12 @@ import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ServerboundInteractPacket;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.ServerCommonPacketListenerImpl;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.pascalpex.npc.Main;
 import net.pascalpex.npc.events.RightClickNPC;
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.v1_20_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_20_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Field;
@@ -26,7 +27,7 @@ public class PacketReader {
     public void inject(Player player) throws NoSuchFieldException, IllegalAccessException {
         CraftPlayer craftPlayer = (CraftPlayer) player;
         ServerGamePacketListenerImpl serverConnection = craftPlayer.getHandle().connection;
-        Field connectionField = ServerGamePacketListenerImpl.class.getDeclaredField("h");
+        Field connectionField = ServerCommonPacketListenerImpl.class.getDeclaredField("c");
         connectionField.setAccessible(true);
         Connection connection = (Connection) connectionField.get(serverConnection);
         channel = connection.channel;

@@ -51,7 +51,7 @@ public class NpcData {
                     e.printStackTrace();
                 }
             }
-        }.runTaskAsynchronously(Main.getInstance());
+        }.runTask(Main.getInstance());
     }
 
     public static void saveNPC(Location loc, String name, String[] skin, int id) {

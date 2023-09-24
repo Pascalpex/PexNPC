@@ -5,11 +5,14 @@ import com.google.gson.JsonParser;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.mojang.datafixers.util.Pair;
+import net.minecraft.Optionull;
+import net.minecraft.network.chat.RemoteChatSession;
 import net.minecraft.network.protocol.game.*;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ClientInformation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
@@ -22,10 +25,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_20_R1.CraftServer;
-import org.bukkit.craftbukkit.v1_20_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_20_R1.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_20_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_20_R2.CraftServer;
+import org.bukkit.craftbukkit.v1_20_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_20_R2.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_20_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -33,10 +36,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import sun.misc.Unsafe;
+import java.util.*;
 
 public class NPC {
 
@@ -57,6 +58,18 @@ public class NPC {
     public static HashMap<Integer, ItemStack> leggingsMap = new HashMap<Integer, ItemStack>();
     public static HashMap<Integer, ItemStack> bootsMap = new HashMap<Integer, ItemStack>();
 
+    static Unsafe unsafe;
+    static {
+        try {
+
+            Field singleoneInstanceField = Unsafe.class.getDeclaredField("theUnsafe");
+            singleoneInstanceField.setAccessible(true);
+            unsafe = (Unsafe) singleoneInstanceField.get(null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private static void setField(Object instance, String name, Object value) throws ReflectiveOperationException{
         Validate.notNull(instance);
         Field field = instance.getClass().getDeclaredField(name);
@@ -69,7 +82,7 @@ public class NPC {
         MinecraftServer server = ((CraftServer) Bukkit.getServer()).getServer();
         ServerLevel world = ((CraftWorld)loc.getWorld()).getHandle();
         GameProfile gameProfile = new GameProfile(UUID.randomUUID(), name);
-        ServerPlayer npc = new ServerPlayer(server, world, gameProfile);
+        ServerPlayer npc = new ServerPlayer(server, world, gameProfile, ClientInformation.createDefault());
         npc.setPos(loc.getX(), loc.getY(), loc.getZ());
         npc.setYRot(loc.getYaw());
         npc.setXRot(loc.getPitch());
@@ -115,7 +128,7 @@ public class NPC {
     public static void loadNPC(Location loc, GameProfile profile, int id, String cmd, String msg, ItemStack handItem, ItemStack offhandItem, ItemStack helmetItem, ItemStack chestplateItem, ItemStack leggingsItem, ItemStack bootsItem) throws ReflectiveOperationException {
         MinecraftServer server = ((CraftServer) Bukkit.getServer()).getServer();
         ServerLevel world = ((CraftWorld)loc.getWorld()).getHandle();
-        ServerPlayer npc = new ServerPlayer(server, world, profile);
+        ServerPlayer npc = new ServerPlayer(server, world, profile, ClientInformation.createDefault());
         npc.setPos(loc.getX(), loc.getY(), loc.getZ());
         npc.setYRot(loc.getYaw());
         npc.setXRot(loc.getPitch());
@@ -195,8 +208,8 @@ public class NPC {
             ServerPlayer p = ((CraftPlayer)player).getHandle();
             GameProfile profile = p.getGameProfile();
             Property property = profile.getProperties().get("textures").iterator().next();
-            String texture = property.getValue();
-            String signature = property.getSignature();
+            String texture = property.value();
+            String signature = property.signature();
             return new String[] {texture, signature};
         }
     }
@@ -205,8 +218,8 @@ public class NPC {
         for(Player player : Bukkit.getOnlinePlayers()) {
             if (player.getWorld().equals(worldMap.get(npc.getId()))) {
                 ServerGamePacketListenerImpl connection = ((CraftPlayer)player).getHandle().connection;
-                connection.send(new ClientboundPlayerInfoUpdatePacket(ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER, npc));
-                connection.send(new ClientboundAddPlayerPacket(npc));
+                connection.send(createInitPacket(npc));
+                connection.send(new ClientboundAddEntityPacket(npc));
                 connection.send(new ClientboundRotateHeadPacket(npc, (byte) (NpcData.getLocation(getID(npc)).getYaw() * 256f / 360f)));
 
                 List<Pair<EquipmentSlot, net.minecraft.world.item.ItemStack>> equipmentList = new ArrayList<>();
@@ -234,9 +247,9 @@ public class NPC {
         for(ServerPlayer npc : NPCs) {
             if (player.getWorld().equals(worldMap.get(npc.getId()))) {
                 ServerGamePacketListenerImpl connection = ((CraftPlayer)player).getHandle().connection;
-                connection.send(new ClientboundPlayerInfoUpdatePacket(ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER, npc));
+                connection.send(createInitPacket(npc));
                 connection.send(new ClientboundEntityEventPacket(npc, (byte) 1));
-                connection.send(new ClientboundAddPlayerPacket(npc));
+                connection.send(new ClientboundAddEntityPacket(npc));
                 connection.send(new ClientboundRotateHeadPacket(npc, (byte) (NpcData.getLocation(getID(npc)).getYaw() * 256f / 360f)));
 
                 List<Pair<EquipmentSlot, net.minecraft.world.item.ItemStack>> equipmentList = new ArrayList<>();
@@ -289,5 +302,25 @@ public class NPC {
         chestplateMap.clear();
         leggingsMap.clear();
         bootsMap.clear();
+    }
+
+    /**
+     * Constructs an initiation packet for the given npc using unsafe and reflection because the public constructors of the ClientboundPlayerInfoUpdatePacket class are not suitable
+     * @param var0 npc to create the packet for
+     * @return initiation packet
+     */
+    private static ClientboundPlayerInfoUpdatePacket createInitPacket(ServerPlayer var0) {
+        try {
+            ClientboundPlayerInfoUpdatePacket packet = (ClientboundPlayerInfoUpdatePacket) unsafe.allocateInstance(ClientboundPlayerInfoUpdatePacket.class);
+            EnumSet<ClientboundPlayerInfoUpdatePacket.Action> actions = EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER);
+            setField(packet, "a", actions);
+            ClientboundPlayerInfoUpdatePacket.Entry entry = new ClientboundPlayerInfoUpdatePacket.Entry(var0.getUUID(), var0.getGameProfile(), true, 0, var0.gameMode.getGameModeForPlayer(), var0.getTabListDisplayName(), (RemoteChatSession.Data) Optionull.map(var0.getChatSession(), RemoteChatSession::asData));
+            List<ClientboundPlayerInfoUpdatePacket.Entry> entries = new ArrayList<>();
+            entries.add(entry);
+            setField(packet, "b", entries);
+            return packet;
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
