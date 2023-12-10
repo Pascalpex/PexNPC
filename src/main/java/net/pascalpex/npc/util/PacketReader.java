@@ -12,7 +12,7 @@ import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.pascalpex.npc.Main;
 import net.pascalpex.npc.events.RightClickNPC;
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.v1_20_R2.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_20_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Field;
