@@ -12,7 +12,7 @@ import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.pascalpex.npc.Main;
 import net.pascalpex.npc.events.RightClickNPC;
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.v1_20_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_20_R4.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Field;
@@ -27,7 +27,7 @@ public class PacketReader {
     public void inject(Player player) throws NoSuchFieldException, IllegalAccessException {
         CraftPlayer craftPlayer = (CraftPlayer) player;
         ServerGamePacketListenerImpl serverConnection = craftPlayer.getHandle().connection;
-        Field connectionField = ServerCommonPacketListenerImpl.class.getDeclaredField("c");
+        Field connectionField = ServerCommonPacketListenerImpl.class.getDeclaredField("e");
         connectionField.setAccessible(true);
         Connection connection = (Connection) connectionField.get(serverConnection);
         channel = connection.channel;
@@ -66,18 +66,15 @@ public class PacketReader {
 
         if(packet.getClass().getSimpleName().equalsIgnoreCase("PacketPlayInUseEntity")) {
 
-            int id = (int) getValue(packet, "a");
+            int id = (int) getValue(packet, "b");
 
                 for(ServerPlayer npc : NPC.getNPCs()) {
                     if(npc.getId() == id) {
                         if (!clicking.containsKey(player.getUniqueId())) {
                             clicking.put(player.getUniqueId(), true);
-                            Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance(), new Runnable() {
-                                @Override
-                                public void run() {
-                                    clicking.remove(player.getUniqueId());
-                                    Bukkit.getPluginManager().callEvent(new RightClickNPC(player, npc));
-                                }
+                            Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance(), () -> {
+                                clicking.remove(player.getUniqueId());
+                                Bukkit.getPluginManager().callEvent(new RightClickNPC(player, npc));
                             }, 1);
                         }
                     }

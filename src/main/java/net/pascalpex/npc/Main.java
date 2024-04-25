@@ -35,7 +35,7 @@ public class Main extends JavaPlugin implements Listener {
 
     public String prefix = "&7[&ePexNPC&7] " + ChatColor.AQUA;
 
-    public static final String versionUrl = "https://pascalpex.ddns.net/files/pexnpc/version.yml";
+    public static final String versionUrl = "https://pascalpex.de/files/pexnpc/version.yml";
 
     private static Main instance;
 
@@ -97,7 +97,7 @@ public class Main extends JavaPlugin implements Listener {
                 NPC.addJoinPacket(player);
             }
         }
-        Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN+"PexNPC 1.17 von Pascalpex Aktiviert.");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN+"PexNPC 1.18 von Pascalpex Aktiviert.");
     }
 
     private void fetchNewestVersion() {
@@ -110,7 +110,7 @@ public class Main extends JavaPlugin implements Listener {
                 newestVersion = str.toLowerCase();
                 if(!newestVersion.equals(getPlugin(this.getClass()).getDescription().getVersion())) {
                     Bukkit.getConsoleSender().sendMessage(prefix + "Eine neue Version von PexNPC ist verfügbar: " + newestVersion);
-                    Bukkit.getConsoleSender().sendMessage(prefix + "Download hier: https://pascalpex.ddns.net/files/pexnpc/PexNPC.jar");
+                    Bukkit.getConsoleSender().sendMessage(prefix + "Download hier: https://pascalpex.de/files/pexnpc/PexNPC.jar");
                 } else {
                     Bukkit.getConsoleSender().sendMessage(prefix + "Du verwendest die neuste Version von PexNPC: " + newestVersion);
                 }
@@ -133,7 +133,7 @@ public class Main extends JavaPlugin implements Listener {
             }
         }
         this.getServer().getMessenger().unregisterOutgoingPluginChannel(this);
-        Bukkit.getConsoleSender().sendMessage(ChatColor.RED+"PexNPC 1.17 von Pascalpex Deaktiviert.");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.RED+"PexNPC 1.18 von Pascalpex Deaktiviert.");
     }
 
     @Override
@@ -145,7 +145,7 @@ public class Main extends JavaPlugin implements Listener {
                 if(player.hasPermission("pexnpc.command")) {
 
                     if(args.length == 0) {
-                        player.sendMessage(prefix + "PexNPC 1.17 von Pascalpex");
+                        player.sendMessage(prefix + "PexNPC 1.18 von Pascalpex");
                         player.sendMessage(prefix + "Verfügbare Befehle:");
                         player.sendMessage(prefix + "/pexnpc help " + ChatColor.DARK_GRAY + "| " + ChatColor.GOLD + "Zeigt diese Seite an");
                         player.sendMessage(prefix + "/pexnpc reload " + ChatColor.DARK_GRAY + "| " + ChatColor.GOLD + "Lädt die NPCs und Dateien neu");
@@ -162,7 +162,7 @@ public class Main extends JavaPlugin implements Listener {
                     }
                     if(args.length == 1) {
                         if(args[0].equalsIgnoreCase("help")) {
-                            player.sendMessage(prefix + "PexNPC 1.17 von Pascalpex");
+                            player.sendMessage(prefix + "PexNPC 1.18 von Pascalpex");
                             player.sendMessage(prefix + "Verfügbare Befehle:");
                             player.sendMessage(prefix + "/pexnpc help " + ChatColor.DARK_GRAY + "| " + ChatColor.GOLD + "Zeigt diese Seite an");
                             player.sendMessage(prefix + "/pexnpc reload " + ChatColor.DARK_GRAY + "| " + ChatColor.GOLD + "Lädt die NPCs und Dateien neu");
@@ -577,7 +577,7 @@ public class Main extends JavaPlugin implements Listener {
                     if(newestVersion != "") {
                         if(!newestVersion.equals(getPlugin(this.getClass()).getDescription().getVersion())) {
                             player.sendMessage(prefix + "Eine neue Version von PexNPC ist verf\u00fcgbar: " + newestVersion);
-                            player.sendMessage(prefix + "Download: https://pascalpex.ddns.net/files/pexnpc/PexNPC.jar");
+                            player.sendMessage(prefix + "Download: https://pascalpex.de/files/pexnpc/PexNPC.jar");
                         }
                     }
                 }

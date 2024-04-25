@@ -25,10 +25,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_20_R3.CraftServer;
-import org.bukkit.craftbukkit.v1_20_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_20_R3.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_20_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_20_R4.CraftServer;
+import org.bukkit.craftbukkit.v1_20_R4.CraftWorld;
+import org.bukkit.craftbukkit.v1_20_R4.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_20_R4.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -87,7 +87,6 @@ public class NPC {
         npc.setYRot(loc.getYaw());
         npc.setXRot(loc.getPitch());
         SynchedEntityData watcher = npc.getEntityData();
-        setField(watcher, "registrationLocked", false);
         int skinMode = Config.getSkinMode();
         switch (skinMode) {
             case 2:
@@ -134,7 +133,6 @@ public class NPC {
         npc.setXRot(loc.getPitch());
 
         SynchedEntityData watcher = npc.getEntityData();
-        setField(watcher, "registrationLocked", false);
         int skinMode = Config.getSkinMode();
         switch (skinMode) {
             case 2:
@@ -313,11 +311,11 @@ public class NPC {
         try {
             ClientboundPlayerInfoUpdatePacket packet = (ClientboundPlayerInfoUpdatePacket) unsafe.allocateInstance(ClientboundPlayerInfoUpdatePacket.class);
             EnumSet<ClientboundPlayerInfoUpdatePacket.Action> actions = EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER);
-            setField(packet, "a", actions);
+            setField(packet, "b", actions);
             ClientboundPlayerInfoUpdatePacket.Entry entry = new ClientboundPlayerInfoUpdatePacket.Entry(var0.getUUID(), var0.getGameProfile(), true, 0, var0.gameMode.getGameModeForPlayer(), var0.getTabListDisplayName(), (RemoteChatSession.Data) Optionull.map(var0.getChatSession(), RemoteChatSession::asData));
             List<ClientboundPlayerInfoUpdatePacket.Entry> entries = new ArrayList<>();
             entries.add(entry);
-            setField(packet, "b", entries);
+            setField(packet, "c", entries);
             return packet;
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
