@@ -97,7 +97,7 @@ public class Main extends JavaPlugin implements Listener {
                 NPC.addJoinPacket(player);
             }
         }
-        Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN+"PexNPC 1.19 von Pascalpex Aktiviert.");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN+"PexNPC 1.20 von Pascalpex Aktiviert.");
     }
 
     private void fetchNewestVersion() {
@@ -133,7 +133,7 @@ public class Main extends JavaPlugin implements Listener {
             }
         }
         this.getServer().getMessenger().unregisterOutgoingPluginChannel(this);
-        Bukkit.getConsoleSender().sendMessage(ChatColor.RED+"PexNPC 1.19 von Pascalpex Deaktiviert.");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.RED+"PexNPC 1.20 von Pascalpex Deaktiviert.");
     }
 
     @Override
@@ -145,7 +145,7 @@ public class Main extends JavaPlugin implements Listener {
                 if(player.hasPermission("pexnpc.command")) {
 
                     if(args.length == 0) {
-                        player.sendMessage(prefix + "PexNPC 1.19 von Pascalpex");
+                        player.sendMessage(prefix + "PexNPC 1.20 von Pascalpex");
                         player.sendMessage(prefix + "Verfügbare Befehle:");
                         player.sendMessage(prefix + "/pexnpc help " + ChatColor.DARK_GRAY + "| " + ChatColor.GOLD + "Zeigt diese Seite an");
                         player.sendMessage(prefix + "/pexnpc reload " + ChatColor.DARK_GRAY + "| " + ChatColor.GOLD + "Lädt die NPCs und Dateien neu");
@@ -162,7 +162,7 @@ public class Main extends JavaPlugin implements Listener {
                     }
                     if(args.length == 1) {
                         if(args[0].equalsIgnoreCase("help")) {
-                            player.sendMessage(prefix + "PexNPC 1.19 von Pascalpex");
+                            player.sendMessage(prefix + "PexNPC 1.20 von Pascalpex");
                             player.sendMessage(prefix + "Verfügbare Befehle:");
                             player.sendMessage(prefix + "/pexnpc help " + ChatColor.DARK_GRAY + "| " + ChatColor.GOLD + "Zeigt diese Seite an");
                             player.sendMessage(prefix + "/pexnpc reload " + ChatColor.DARK_GRAY + "| " + ChatColor.GOLD + "Lädt die NPCs und Dateien neu");
