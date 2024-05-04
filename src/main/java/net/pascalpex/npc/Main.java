@@ -223,6 +223,10 @@ public class Main extends JavaPlugin implements Listener {
                     if(args.length == 2) {
                         if(args[0].equalsIgnoreCase("create")) {
                             String name = args[1].replace("&", "§");
+                            if(!checkName(name)) {
+                                player.sendMessage(prefix + ChatColor.RED + "Dieser Vorname ist vergeben!");
+                                return true;
+                            }
                             try {
                                 NPC.createNPC(player, name, name);
                                 for (Player p : Bukkit.getOnlinePlayers()) {
@@ -342,8 +346,8 @@ public class Main extends JavaPlugin implements Listener {
                     if(args.length == 3) {
                         if(args[0].equalsIgnoreCase("create")) {
                             String name = args[1].replace("&", "§");
-                            if(name.length() > 16) {
-                                player.sendMessage(prefix + ChatColor.RED + "Der Name darf maximal 16 Zeichen lang sein");
+                            if(!checkName(name)) {
+                                player.sendMessage(prefix + ChatColor.RED + "Dieser Vorname ist vergeben!");
                                 return true;
                             }
                             String skin = args[2];
@@ -530,8 +534,8 @@ public class Main extends JavaPlugin implements Listener {
                                         name = name + " ";
                                     }
                                 }
-                                if(name.length() > 16) {
-                                    player.sendMessage(prefix + ChatColor.RED + "Der Name darf maximal 16 Zeichen lang sein");
+                                if(!checkName(name)) {
+                                    player.sendMessage(prefix + ChatColor.RED + "Dieser Vorname ist vergeben!");
                                     return true;
                                 }
                                 name = name.replace("&", "§");
@@ -668,6 +672,18 @@ public class Main extends JavaPlugin implements Listener {
                 NPC.addJoinPacket(player);
             }
         }.runTaskLater(this, 1);
+    }
+
+    public boolean checkName(String name) {
+        int npcSize = NpcData.getNPCs();
+        String prename = name.length() > 16 ? name.substring(0, 16) : name;
+        for(int i = 1; i <= npcSize; i++) {
+            String currentName = NpcData.getName(i);
+            if(currentName.startsWith(prename)) {
+                return false;
+            }
+        }
+        return true;
     }
 
 }

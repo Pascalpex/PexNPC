@@ -4,8 +4,12 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
+import com.mojang.brigadier.LiteralMessage;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.Optionull;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentUtils;
+import net.minecraft.network.chat.OutgoingChatMessage;
 import net.minecraft.network.chat.RemoteChatSession;
 import net.minecraft.network.protocol.game.*;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -17,14 +21,13 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.scores.PlayerTeam;
+import net.minecraft.world.scores.Scoreboard;
 import net.pascalpex.npc.Config;
 import net.pascalpex.npc.Main;
 import net.pascalpex.npc.NpcData;
 import org.apache.commons.lang.Validate;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_20_R4.CraftServer;
 import org.bukkit.craftbukkit.v1_20_R4.CraftWorld;
 import org.bukkit.craftbukkit.v1_20_R4.entity.CraftPlayer;
@@ -36,6 +39,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.net.URL;
+
+import org.bukkit.scoreboard.Team;
 import sun.misc.Unsafe;
 import java.util.*;
 
@@ -81,7 +86,12 @@ public class NPC {
         Location loc = player.getLocation();
         MinecraftServer server = ((CraftServer) Bukkit.getServer()).getServer();
         ServerLevel world = ((CraftWorld)loc.getWorld()).getHandle();
-        GameProfile gameProfile = new GameProfile(UUID.randomUUID(), name);
+        String trimmedName = name.substring(0, Math.min(name.length(), 16));
+        String suffix = name.length() > 16 ? name.substring(16) : "";
+        if(trimmedName.endsWith("§")) {
+            suffix = "§" + suffix;
+        }
+        GameProfile gameProfile = new GameProfile(UUID.randomUUID(), trimmedName);
         ServerPlayer npc = new ServerPlayer(server, world, gameProfile, ClientInformation.createDefault());
         npc.setPos(loc.getX(), loc.getY(), loc.getZ());
         npc.setYRot(loc.getYaw());
@@ -109,7 +119,7 @@ public class NPC {
         leggingsMap.put(npc.getId(), nullStack);
         bootsMap.put(npc.getId(), nullStack);
 
-        addNPCPacket(npc);
+        addNPCPacket(npc, suffix);
         NPCs.add(npc);
 
         int id = 1;
@@ -124,7 +134,7 @@ public class NPC {
         NpcData.saveNPC(loc, name, nameS, id);
     }
 
-    public static void loadNPC(Location loc, GameProfile profile, int id, String cmd, String msg, ItemStack handItem, ItemStack offhandItem, ItemStack helmetItem, ItemStack chestplateItem, ItemStack leggingsItem, ItemStack bootsItem) throws ReflectiveOperationException {
+    public static void loadNPC(Location loc, GameProfile profile, int id, String cmd, String msg, ItemStack handItem, ItemStack offhandItem, ItemStack helmetItem, ItemStack chestplateItem, ItemStack leggingsItem, ItemStack bootsItem, String suffix) throws ReflectiveOperationException {
         MinecraftServer server = ((CraftServer) Bukkit.getServer()).getServer();
         ServerLevel world = ((CraftWorld)loc.getWorld()).getHandle();
         ServerPlayer npc = new ServerPlayer(server, world, profile, ClientInformation.createDefault());
@@ -158,7 +168,7 @@ public class NPC {
         leggingsMap.put(npc.getId(), leggingsItem);
         bootsMap.put(npc.getId(), bootsItem);
 
-        addNPCPacket(npc);
+        addNPCPacket(npc, suffix);
         NPCs.add(npc);
     }
 
@@ -212,13 +222,18 @@ public class NPC {
         }
     }
 
-    public static void addNPCPacket(ServerPlayer npc) {
+    public static void addNPCPacket(ServerPlayer npc, String suffix) {
         for(Player player : Bukkit.getOnlinePlayers()) {
             if (player.getWorld().equals(worldMap.get(npc.getId()))) {
                 ServerGamePacketListenerImpl connection = ((CraftPlayer)player).getHandle().connection;
                 connection.send(createInitPacket(npc));
                 connection.send(new ClientboundAddEntityPacket(npc));
                 connection.send(new ClientboundRotateHeadPacket(npc, (byte) (NpcData.getLocation(getID(npc)).getYaw() * 256f / 360f)));
+                Scoreboard scoreboard = new Scoreboard();
+                PlayerTeam team = new PlayerTeam(scoreboard, npc.getUUID().toString());
+                team.setPlayerSuffix(ComponentUtils.fromMessage(new LiteralMessage(ChatColor.getLastColors(npc.getScoreboardName()) + suffix)));
+                connection.send(ClientboundSetPlayerTeamPacket.createAddOrModifyPacket(team, true));
+                connection.send(ClientboundSetPlayerTeamPacket.createPlayerPacket(team, npc.getScoreboardName(), ClientboundSetPlayerTeamPacket.Action.ADD));
 
                 List<Pair<EquipmentSlot, net.minecraft.world.item.ItemStack>> equipmentList = new ArrayList<>();
                 equipmentList.add(new Pair<>(EquipmentSlot.MAINHAND, CraftItemStack.asNMSCopy(handMap.get(npc.getId()))));

@@ -200,13 +200,19 @@ public class NpcData {
             ItemStack bootsItem = config.getItemStack("npcs" + "." + npc + ".items" + ".BOOTS");
 
             String name = config.getString("npcs" + "." + npc + ".name");
-            GameProfile gameProfile = new GameProfile(UUID.randomUUID(), name);
+            String trimmedName = name.substring(0, Math.min(name.length(), 16));
+            String suffix = name.length() > 16 ? name.substring(16) : "";
+            if(trimmedName.endsWith("§")) {
+                suffix = "§" + suffix;
+            }
+            GameProfile gameProfile = new GameProfile(UUID.randomUUID(), trimmedName);
+
             String skinTexture = config.getString("npcs" + "." + npc + ".skin" + ".texture");
             String skinSignature = config.getString("npcs" + "." + npc + ".skin" + ".signature");
             gameProfile.getProperties().put("textures", new Property("textures", skinTexture, skinSignature));
 
             try {
-                NPC.loadNPC(loc, gameProfile, Integer.parseInt(npc), cmd, msg, handItem, offhandItem, helmetItem, chestplateItem, leggingsItem, bootsItem);
+                NPC.loadNPC(loc, gameProfile, Integer.parseInt(npc), cmd, msg, handItem, offhandItem, helmetItem, chestplateItem, leggingsItem, bootsItem, suffix);
             } catch (ReflectiveOperationException e) {
                 e.printStackTrace();
             }
