@@ -42,8 +42,6 @@ public class Main extends JavaPlugin implements Listener {
     public static Set<String> updateNotified = new HashSet<>();
     public String newestVersion = "";
 
-    private final int pluginId = 14923;
-
     private static boolean placeholdersEnabled = false;
 
     @Override
@@ -51,7 +49,7 @@ public class Main extends JavaPlugin implements Listener {
         this.getServer().getPluginManager().registerEvents(this, this);
         instance = this;
 
-        new Metrics(this, pluginId);
+        new Metrics(this, 14923);
 
         NpcData.load();
         Config.load();
@@ -59,7 +57,7 @@ public class Main extends JavaPlugin implements Listener {
         prefix = Config.getPrefix() + " " + ChatColor.AQUA;
         prefix = prefix.replace("&", "§");
 
-        if(Bukkit.getPluginManager().getPlugin("PlaceholderAPI") == null) {
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") == null) {
             Bukkit.getConsoleSender().sendMessage(prefix + "PlaceholderAPI konnte nicht gefunden werden!");
             Bukkit.getConsoleSender().sendMessage(prefix + "Placeholder werden nicht funktionieren");
         } else {
@@ -68,7 +66,7 @@ public class Main extends JavaPlugin implements Listener {
             Bukkit.getConsoleSender().sendMessage(prefix + "Placeholder werden genutzt");
         }
 
-        if(Config.getUpdateChecker()) {
+        if (Config.getUpdateChecker()) {
             fetchNewestVersion();
         }
 
@@ -80,35 +78,34 @@ public class Main extends JavaPlugin implements Listener {
 
         NpcData.loadNPCs();
 
-        if(!Bukkit.getOnlinePlayers().isEmpty()) {
-            for(Player player : Bukkit.getOnlinePlayers()) {
+        if (!Bukkit.getOnlinePlayers().isEmpty()) {
+            for (Player player : Bukkit.getOnlinePlayers()) {
                 PacketReader reader = new PacketReader();
                 try {
                     reader.inject(player);
                 } catch (NoSuchFieldException | IllegalAccessException e) {
                     Bukkit.getConsoleSender().sendMessage(prefix + "Der PacketReader konnte nicht injiziert werden!");
                 }
-                if(NPC.getNPCs() == null) {
+                if (NPC.getNPCs() == null) {
                     return;
                 }
-                if(NPC.getNPCs().isEmpty()) {
+                if (NPC.getNPCs().isEmpty()) {
                     return;
                 }
                 NPC.addJoinPacket(player);
             }
         }
-        Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN+"PexNPC 1.20 von Pascalpex Aktiviert.");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "PexNPC 1.21 von Pascalpex Aktiviert.");
     }
 
     private void fetchNewestVersion() {
-        try
-        {
+        try {
             URL url = new URL(versionUrl);
             BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
-            String str = "";
+            String str;
             if ((str = in.readLine()) != null) {
                 newestVersion = str.toLowerCase();
-                if(!newestVersion.equals(getPlugin(this.getClass()).getDescription().getVersion())) {
+                if (!newestVersion.equals(getPlugin(this.getClass()).getDescription().getVersion())) {
                     Bukkit.getConsoleSender().sendMessage(prefix + "Eine neue Version von PexNPC ist verfügbar: " + newestVersion);
                     Bukkit.getConsoleSender().sendMessage(prefix + "Download hier: https://pascalpex.de/files/pexnpc/PexNPC.jar");
                 } else {
@@ -116,7 +113,8 @@ public class Main extends JavaPlugin implements Listener {
                 }
             }
             in.close();
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
     }
 
     public static Main getInstance() {
@@ -125,27 +123,26 @@ public class Main extends JavaPlugin implements Listener {
 
     @Override
     public void onDisable() {
-        for(Player player : Bukkit.getOnlinePlayers()) {
+        for (Player player : Bukkit.getOnlinePlayers()) {
             PacketReader reader = new PacketReader();
             reader.uninject(player);
-            for(ServerPlayer npc : NPC.getNPCs()) {
+            for (ServerPlayer npc : NPC.getNPCs()) {
                 NPC.removeNPC(player, npc);
             }
         }
         this.getServer().getMessenger().unregisterOutgoingPluginChannel(this);
-        Bukkit.getConsoleSender().sendMessage(ChatColor.RED+"PexNPC 1.20 von Pascalpex Deaktiviert.");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "PexNPC 1.21 von Pascalpex Deaktiviert.");
     }
 
     @Override
-    public boolean onCommand(CommandSender sender,Command cmd,String label,String[] args) {
+    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 
-        if (sender instanceof Player) {
-            Player player = (Player) sender;
-            if(label.equalsIgnoreCase("pexnpc")) {
-                if(player.hasPermission("pexnpc.command")) {
+        if (sender instanceof Player player) {
+            if (label.equalsIgnoreCase("pexnpc")) {
+                if (player.hasPermission("pexnpc.command")) {
 
-                    if(args.length == 0) {
-                        player.sendMessage(prefix + "PexNPC 1.20 von Pascalpex");
+                    if (args.length == 0) {
+                        player.sendMessage(prefix + "PexNPC 1.21 von Pascalpex");
                         player.sendMessage(prefix + "Verfügbare Befehle:");
                         player.sendMessage(prefix + "/pexnpc help " + ChatColor.DARK_GRAY + "| " + ChatColor.GOLD + "Zeigt diese Seite an");
                         player.sendMessage(prefix + "/pexnpc reload " + ChatColor.DARK_GRAY + "| " + ChatColor.GOLD + "Lädt die NPCs und Dateien neu");
@@ -160,9 +157,9 @@ public class Main extends JavaPlugin implements Listener {
                         player.sendMessage(prefix + "/pexnpc item [ID] [SLOT] " + ChatColor.DARK_GRAY + "| " + ChatColor.GOLD + "Gibt einem NPC ein Item");
                         player.sendMessage(prefix + "/pexnpc clear [ID] " + ChatColor.DARK_GRAY + "| " + ChatColor.GOLD + "Löscht die Befehle, Nachrichten und Items eines NPC");
                     }
-                    if(args.length == 1) {
-                        if(args[0].equalsIgnoreCase("help")) {
-                            player.sendMessage(prefix + "PexNPC 1.20 von Pascalpex");
+                    if (args.length == 1) {
+                        if (args[0].equalsIgnoreCase("help")) {
+                            player.sendMessage(prefix + "PexNPC 1.21 von Pascalpex");
                             player.sendMessage(prefix + "Verfügbare Befehle:");
                             player.sendMessage(prefix + "/pexnpc help " + ChatColor.DARK_GRAY + "| " + ChatColor.GOLD + "Zeigt diese Seite an");
                             player.sendMessage(prefix + "/pexnpc reload " + ChatColor.DARK_GRAY + "| " + ChatColor.GOLD + "Lädt die NPCs und Dateien neu");
@@ -177,28 +174,28 @@ public class Main extends JavaPlugin implements Listener {
                             player.sendMessage(prefix + "/pexnpc item [ID] [SLOT] " + ChatColor.DARK_GRAY + "| " + ChatColor.GOLD + "Gibt einem NPC ein Item");
                             player.sendMessage(prefix + "/pexnpc clear [ID] " + ChatColor.DARK_GRAY + "| " + ChatColor.GOLD + "Löscht die Befehle, Nachrichten und Items eines NPC");
                         }
-                        if(args[0].equalsIgnoreCase("reload")) {
+                        if (args[0].equalsIgnoreCase("reload")) {
                             Config.load();
                             NpcData.load();
-                            for(Player p : Bukkit.getOnlinePlayers()) {
+                            for (Player p : Bukkit.getOnlinePlayers()) {
                                 PacketReader reader = new PacketReader();
                                 reader.uninject(p);
-                                for(ServerPlayer npc : NPC.getNPCs()) {
+                                for (ServerPlayer npc : NPC.getNPCs()) {
                                     NPC.removeNPC(p, npc);
                                 }
                             }
                             NPC.clear();
                             NpcData.loadNPCs();
-                            if(!Bukkit.getOnlinePlayers().isEmpty()) {
-                                for(Player p : Bukkit.getOnlinePlayers()) {
+                            if (!Bukkit.getOnlinePlayers().isEmpty()) {
+                                for (Player p : Bukkit.getOnlinePlayers()) {
                                     PacketReader reader = new PacketReader();
                                     try {
                                         reader.inject(p);
                                     } catch (NoSuchFieldException | IllegalAccessException e) {
                                         Bukkit.getConsoleSender().sendMessage(prefix + "Der PacketReader konnte nicht injiziert werden!");
                                     }
-                                    if(NPC.getNPCs() != null) {
-                                        if(!NPC.getNPCs().isEmpty()) {
+                                    if (NPC.getNPCs() != null) {
+                                        if (!NPC.getNPCs().isEmpty()) {
                                             NPC.addJoinPacket(p);
                                         }
                                     }
@@ -208,22 +205,22 @@ public class Main extends JavaPlugin implements Listener {
                             prefix = prefix.replace("&", "§");
                             player.sendMessage(prefix + "Dateien und NPCs erfolgreich neu geladen");
                         }
-                        if(args[0].equalsIgnoreCase("create")) {
+                        if (args[0].equalsIgnoreCase("create")) {
                             player.sendMessage(prefix + ChatColor.RED + "Nutze " + ChatColor.AQUA + "/PexNPC create [NAME]");
                         }
-                        if(args[0].equalsIgnoreCase("list")) {
+                        if (args[0].equalsIgnoreCase("list")) {
                             player.sendMessage(prefix + "Alle geladenen NPCs:");
-                            for(int i = 1; i <= NpcData.getNPCs(); i++) {
+                            for (int i = 1; i <= NpcData.getNPCs(); i++) {
                                 String name = NpcData.getName(i);
                                 Location loc = NpcData.getLocation(i);
                                 player.sendMessage(ChatColor.AQUA + "-" + " ID:" + i + ChatColor.GOLD + " Name: " + ChatColor.WHITE + name + ChatColor.AQUA + ChatColor.RED + " Welt: " + loc.getWorld().getName() + ChatColor.GREEN + " X: " + loc.getBlockX() + " Y: " + loc.getBlockY() + " Z: " + loc.getBlockZ());
                             }
                         }
                     }
-                    if(args.length == 2) {
-                        if(args[0].equalsIgnoreCase("create")) {
+                    if (args.length == 2) {
+                        if (args[0].equalsIgnoreCase("create")) {
                             String name = args[1].replace("&", "§");
-                            if(!checkName(name)) {
+                            if (!checkName(name)) {
                                 player.sendMessage(prefix + ChatColor.RED + "Dieser Vorname ist vergeben!");
                                 return true;
                             }
@@ -250,7 +247,7 @@ public class Main extends JavaPlugin implements Listener {
                             }
                             player.sendMessage(prefix + "NPC erfolgreich erstellt");
                         }
-                        if(args[0].equalsIgnoreCase("delete")) {
+                        if (args[0].equalsIgnoreCase("delete")) {
                             String arg1 = args[1];
                             int id = 0;
                             try {
@@ -258,10 +255,10 @@ public class Main extends JavaPlugin implements Listener {
                             } catch (NumberFormatException e) {
                                 player.sendMessage(prefix + ChatColor.RED + "Bitte gib eine ID an");
                             }
-                            if(id != 0 && id <= NpcData.getNPCs()) {
+                            if (id != 0 && id <= NpcData.getNPCs()) {
                                 ServerPlayer npc = NPC.getNPC(id);
                                 NpcData.removeNPC(id);
-                                for(Player p : Bukkit.getOnlinePlayers()) {
+                                for (Player p : Bukkit.getOnlinePlayers()) {
                                     NPC.removeNPC(p, npc);
                                 }
                                 player.sendMessage(prefix + "Der NPC wurde entfernt");
@@ -269,7 +266,7 @@ public class Main extends JavaPlugin implements Listener {
                                 player.sendMessage(prefix + ChatColor.RED + "Bitte gib eine gültige ID an");
                             }
                         }
-                        if(args[0].equalsIgnoreCase("movehere")) {
+                        if (args[0].equalsIgnoreCase("movehere")) {
                             int id = 0;
                             try {
                                 id = Integer.parseInt(args[1]);
@@ -277,20 +274,20 @@ public class Main extends JavaPlugin implements Listener {
                                 player.sendMessage(prefix + ChatColor.RED + "Bitte gib eine ID an");
                             }
 
-                            if(id != 0 && id <= NpcData.getNPCs()) {
+                            if (id != 0 && id <= NpcData.getNPCs()) {
                                 NpcData.moveNPC(id, player.getLocation());
 
-                                for(Player p : Bukkit.getOnlinePlayers()) {
-                                    for(ServerPlayer npc : NPC.getNPCs()) {
+                                for (Player p : Bukkit.getOnlinePlayers()) {
+                                    for (ServerPlayer npc : NPC.getNPCs()) {
                                         NPC.removeNPC(p, npc);
                                     }
                                 }
                                 NPC.clear();
                                 NpcData.loadNPCs();
-                                if(!Bukkit.getOnlinePlayers().isEmpty()) {
-                                    for(Player p : Bukkit.getOnlinePlayers()) {
-                                        if(NPC.getNPCs() != null) {
-                                            if(!NPC.getNPCs().isEmpty()) {
+                                if (!Bukkit.getOnlinePlayers().isEmpty()) {
+                                    for (Player p : Bukkit.getOnlinePlayers()) {
+                                        if (NPC.getNPCs() != null) {
+                                            if (!NPC.getNPCs().isEmpty()) {
                                                 NPC.addJoinPacket(p);
                                             }
                                         }
@@ -301,7 +298,7 @@ public class Main extends JavaPlugin implements Listener {
                                 player.sendMessage(prefix + ChatColor.RED + "Bitte gib eine gültige ID an");
                             }
                         }
-                        if(args[0].equalsIgnoreCase("clear")) {
+                        if (args[0].equalsIgnoreCase("clear")) {
                             int id = 0;
                             try {
                                 id = Integer.parseInt(args[1]);
@@ -309,7 +306,7 @@ public class Main extends JavaPlugin implements Listener {
                                 player.sendMessage(prefix + ChatColor.RED + "Bitte gib eine ID an");
                             }
 
-                            if(id != 0 && id <= NpcData.getNPCs()) {
+                            if (id != 0 && id <= NpcData.getNPCs()) {
 
                                 NpcData.equipNPC(id, "HAND", new ItemStack(Material.AIR, 1));
                                 NpcData.equipNPC(id, "OFFHAND", new ItemStack(Material.AIR, 1));
@@ -343,10 +340,10 @@ public class Main extends JavaPlugin implements Listener {
                             }
                         }
                     }
-                    if(args.length == 3) {
-                        if(args[0].equalsIgnoreCase("create")) {
+                    if (args.length == 3) {
+                        if (args[0].equalsIgnoreCase("create")) {
                             String name = args[1].replace("&", "§");
-                            if(!checkName(name)) {
+                            if (!checkName(name)) {
                                 player.sendMessage(prefix + ChatColor.RED + "Dieser Vorname ist vergeben!");
                                 return true;
                             }
@@ -374,7 +371,7 @@ public class Main extends JavaPlugin implements Listener {
                             }
                             player.sendMessage(prefix + "NPC erfolgreich erstellt");
                         }
-                        if(args[0].equalsIgnoreCase("skin")) {
+                        if (args[0].equalsIgnoreCase("skin")) {
                             int id = 0;
                             try {
                                 id = Integer.parseInt(args[1]);
@@ -383,20 +380,20 @@ public class Main extends JavaPlugin implements Listener {
                             }
                             String skin = args[2];
 
-                            if(id != 0 && id <= NpcData.getNPCs()) {
+                            if (id != 0 && id <= NpcData.getNPCs()) {
                                 NpcData.changeSkin(player, id, skin);
 
-                                for(Player p : Bukkit.getOnlinePlayers()) {
-                                    for(ServerPlayer npc : NPC.getNPCs()) {
+                                for (Player p : Bukkit.getOnlinePlayers()) {
+                                    for (ServerPlayer npc : NPC.getNPCs()) {
                                         NPC.removeNPC(p, npc);
                                     }
                                 }
                                 NPC.clear();
                                 NpcData.loadNPCs();
-                                if(!Bukkit.getOnlinePlayers().isEmpty()) {
-                                    for(Player p : Bukkit.getOnlinePlayers()) {
-                                        if(NPC.getNPCs() != null) {
-                                            if(!NPC.getNPCs().isEmpty()) {
+                                if (!Bukkit.getOnlinePlayers().isEmpty()) {
+                                    for (Player p : Bukkit.getOnlinePlayers()) {
+                                        if (NPC.getNPCs() != null) {
+                                            if (!NPC.getNPCs().isEmpty()) {
                                                 NPC.addJoinPacket(p);
                                             }
                                         }
@@ -407,7 +404,7 @@ public class Main extends JavaPlugin implements Listener {
                                 player.sendMessage(prefix + ChatColor.RED + "Bitte gib eine gültige ID an");
                             }
                         }
-                        if(args[0].equalsIgnoreCase("item")) {
+                        if (args[0].equalsIgnoreCase("item")) {
                             int id = 0;
                             try {
                                 id = Integer.parseInt(args[1]);
@@ -416,8 +413,8 @@ public class Main extends JavaPlugin implements Listener {
                             }
                             String slot = args[2].toUpperCase();
                             ItemStack item = player.getItemInHand();
-                            if(id != 0 && id <= NpcData.getNPCs()) {
-                                if(slot.equals("HAND") || slot.equals("OFFHAND") || slot.equals("HELMET") || slot.equals("CHESTPLATE") || slot.equals("LEGGINGS") || slot.equals("BOOTS")) {
+                            if (id != 0 && id <= NpcData.getNPCs()) {
+                                if (slot.equals("HAND") || slot.equals("OFFHAND") || slot.equals("HELMET") || slot.equals("CHESTPLATE") || slot.equals("LEGGINGS") || slot.equals("BOOTS")) {
                                     NpcData.equipNPC(id, slot, item);
                                     for (Player p : Bukkit.getOnlinePlayers()) {
                                         for (ServerPlayer npc : NPC.getNPCs()) {
@@ -444,34 +441,34 @@ public class Main extends JavaPlugin implements Listener {
                             }
                         }
                     }
-                    if(args.length >= 3) {
-                        if(args[0].equalsIgnoreCase("cmd")) {
+                    if (args.length >= 3) {
+                        if (args[0].equalsIgnoreCase("cmd")) {
                             int id = 0;
                             try {
                                 id = Integer.parseInt(args[1]);
                             } catch (NumberFormatException e) {
                                 player.sendMessage(prefix + ChatColor.RED + "Bitte gib eine ID an");
                             }
-                            if(id != 0 && id <= NpcData.getNPCs()) {
+                            if (id != 0 && id <= NpcData.getNPCs()) {
                                 String command = "";
-                                for(int i = 2; i < args.length; i++) {
+                                for (int i = 2; i < args.length; i++) {
                                     command = command + args[i];
-                                    if(i + 1 != args.length) {
+                                    if (i + 1 != args.length) {
                                         command = command + " ";
                                     }
                                 }
                                 NpcData.setCMD(id, command);
-                                for(Player p : Bukkit.getOnlinePlayers()) {
-                                    for(ServerPlayer npc : NPC.getNPCs()) {
+                                for (Player p : Bukkit.getOnlinePlayers()) {
+                                    for (ServerPlayer npc : NPC.getNPCs()) {
                                         NPC.removeNPC(p, npc);
                                     }
                                 }
                                 NPC.clear();
                                 NpcData.loadNPCs();
-                                if(!Bukkit.getOnlinePlayers().isEmpty()) {
-                                    for(Player p : Bukkit.getOnlinePlayers()) {
-                                        if(NPC.getNPCs() != null) {
-                                            if(!NPC.getNPCs().isEmpty()) {
+                                if (!Bukkit.getOnlinePlayers().isEmpty()) {
+                                    for (Player p : Bukkit.getOnlinePlayers()) {
+                                        if (NPC.getNPCs() != null) {
+                                            if (!NPC.getNPCs().isEmpty()) {
                                                 NPC.addJoinPacket(p);
                                             }
                                         }
@@ -482,33 +479,33 @@ public class Main extends JavaPlugin implements Listener {
                                 player.sendMessage(prefix + ChatColor.RED + "Bitte gib eine gültige ID an");
                             }
                         }
-                        if(args[0].equalsIgnoreCase("msg")) {
+                        if (args[0].equalsIgnoreCase("msg")) {
                             int id = 0;
                             try {
                                 id = Integer.parseInt(args[1]);
                             } catch (NumberFormatException e) {
                                 player.sendMessage(prefix + ChatColor.RED + "Bitte gib eine ID an");
                             }
-                            if(id != 0 && id <= NpcData.getNPCs()) {
+                            if (id != 0 && id <= NpcData.getNPCs()) {
                                 String message = "";
-                                for(int i = 2; i < args.length; i++) {
+                                for (int i = 2; i < args.length; i++) {
                                     message = message + args[i];
-                                    if(i + 1 != args.length) {
+                                    if (i + 1 != args.length) {
                                         message = message + " ";
                                     }
                                 }
                                 NpcData.setMSG(id, message);
-                                for(Player p : Bukkit.getOnlinePlayers()) {
-                                    for(ServerPlayer npc : NPC.getNPCs()) {
+                                for (Player p : Bukkit.getOnlinePlayers()) {
+                                    for (ServerPlayer npc : NPC.getNPCs()) {
                                         NPC.removeNPC(p, npc);
                                     }
                                 }
                                 NPC.clear();
                                 NpcData.loadNPCs();
-                                if(!Bukkit.getOnlinePlayers().isEmpty()) {
-                                    for(Player p : Bukkit.getOnlinePlayers()) {
-                                        if(NPC.getNPCs() != null) {
-                                            if(!NPC.getNPCs().isEmpty()) {
+                                if (!Bukkit.getOnlinePlayers().isEmpty()) {
+                                    for (Player p : Bukkit.getOnlinePlayers()) {
+                                        if (NPC.getNPCs() != null) {
+                                            if (!NPC.getNPCs().isEmpty()) {
                                                 NPC.addJoinPacket(p);
                                             }
                                         }
@@ -519,38 +516,38 @@ public class Main extends JavaPlugin implements Listener {
                                 player.sendMessage(prefix + ChatColor.RED + "Bitte gib eine gültige ID an");
                             }
                         }
-                        if(args[0].equalsIgnoreCase("name")) {
+                        if (args[0].equalsIgnoreCase("name")) {
                             int id = 0;
                             try {
                                 id = Integer.parseInt(args[1]);
                             } catch (NumberFormatException e) {
                                 player.sendMessage(prefix + ChatColor.RED + "Bitte gib eine ID an");
                             }
-                            if(id != 0 && id <= NpcData.getNPCs()) {
+                            if (id != 0 && id <= NpcData.getNPCs()) {
                                 String name = "";
-                                for(int i = 2; i < args.length; i++) {
+                                for (int i = 2; i < args.length; i++) {
                                     name = name + args[i];
-                                    if(i + 1 != args.length) {
+                                    if (i + 1 != args.length) {
                                         name = name + " ";
                                     }
                                 }
-                                if(!checkName(name)) {
+                                if (!checkName(name)) {
                                     player.sendMessage(prefix + ChatColor.RED + "Dieser Vorname ist vergeben!");
                                     return true;
                                 }
                                 name = name.replace("&", "§");
                                 NpcData.changeName(id, name);
-                                for(Player p : Bukkit.getOnlinePlayers()) {
-                                    for(ServerPlayer npc : NPC.getNPCs()) {
+                                for (Player p : Bukkit.getOnlinePlayers()) {
+                                    for (ServerPlayer npc : NPC.getNPCs()) {
                                         NPC.removeNPC(p, npc);
                                     }
                                 }
                                 NPC.clear();
                                 NpcData.loadNPCs();
-                                if(!Bukkit.getOnlinePlayers().isEmpty()) {
-                                    for(Player p : Bukkit.getOnlinePlayers()) {
-                                        if(NPC.getNPCs() != null) {
-                                            if(!NPC.getNPCs().isEmpty()) {
+                                if (!Bukkit.getOnlinePlayers().isEmpty()) {
+                                    for (Player p : Bukkit.getOnlinePlayers()) {
+                                        if (NPC.getNPCs() != null) {
+                                            if (!NPC.getNPCs().isEmpty()) {
                                                 NPC.addJoinPacket(p);
                                             }
                                         }
@@ -575,11 +572,11 @@ public class Main extends JavaPlugin implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        if(Config.getUpdateChecker()) {
-            if(player.hasPermission("pexnpc.update")) {
-                if(!updateNotified.contains(player.getUniqueId().toString())) {
-                    if(newestVersion != "") {
-                        if(!newestVersion.equals(getPlugin(this.getClass()).getDescription().getVersion())) {
+        if (Config.getUpdateChecker()) {
+            if (player.hasPermission("pexnpc.update")) {
+                if (!updateNotified.contains(player.getUniqueId().toString())) {
+                    if (newestVersion != "") {
+                        if (!newestVersion.equals(getPlugin(this.getClass()).getDescription().getVersion())) {
                             player.sendMessage(prefix + "Eine neue Version von PexNPC ist verf\u00fcgbar: " + newestVersion);
                             player.sendMessage(prefix + "Download: https://pascalpex.de/files/pexnpc/PexNPC.jar");
                         }
@@ -594,10 +591,10 @@ public class Main extends JavaPlugin implements Listener {
         } catch (NoSuchFieldException | IllegalAccessException e) {
             Bukkit.getConsoleSender().sendMessage(prefix + "Der PacketReader konnte nicht injiziert werden!");
         }
-        if(NPC.getNPCs() == null) {
+        if (NPC.getNPCs() == null) {
             return;
         }
-        if(NPC.getNPCs().isEmpty()) {
+        if (NPC.getNPCs().isEmpty()) {
             return;
         }
         NPC.addJoinPacket(player);
@@ -615,8 +612,8 @@ public class Main extends JavaPlugin implements Listener {
         Player player = event.getPlayer();
         int id = event.getNpc().getId();
         String msg = NPC.getMSG(id);
-        if(msg != null && !msg.equalsIgnoreCase("") && !msg.equalsIgnoreCase("UNSET")) {
-            if(placeholdersEnabled) {
+        if (msg != null && !msg.equalsIgnoreCase("") && !msg.equalsIgnoreCase("UNSET")) {
+            if (placeholdersEnabled) {
                 msg = PlaceholderAPI.setPlaceholders(player, msg);
             }
             player.sendMessage(msg.replace("&", "§"));
@@ -629,22 +626,22 @@ public class Main extends JavaPlugin implements Listener {
             } else {
                 Bukkit.dispatchCommand(player, cmd);
             }
-            if(Config.getLogCommands()) {
+            if (Config.getLogCommands()) {
                 Bukkit.getConsoleSender().sendMessage(prefix + "Player " + ChatColor.GOLD + player.getName() + ChatColor.AQUA + " used NPC with ID " + ChatColor.GOLD + NPC.getID(event.getNpc()) + ChatColor.AQUA + " to dispatch command: " + ChatColor.GOLD + cmd);
             }
         }
     }
 
     @EventHandler
-    public void onTeleport(PlayerTeleportEvent event)  {
+    public void onTeleport(PlayerTeleportEvent event) {
         Player player = event.getPlayer();
-        if(event.getFrom().getWorld().equals(event.getTo().getWorld())) {
+        if (event.getFrom().getWorld().equals(event.getTo().getWorld())) {
             return;
         }
-        if(NPC.getNPCs() == null) {
+        if (NPC.getNPCs() == null) {
             return;
         }
-        if(NPC.getNPCs().isEmpty()) {
+        if (NPC.getNPCs().isEmpty()) {
             return;
         }
         new BukkitRunnable() {
@@ -659,10 +656,10 @@ public class Main extends JavaPlugin implements Listener {
     @EventHandler
     public void onRespawn(PlayerRespawnEvent event) {
         Player player = event.getPlayer();
-        if(NPC.getNPCs() == null) {
+        if (NPC.getNPCs() == null) {
             return;
         }
-        if(NPC.getNPCs().isEmpty()) {
+        if (NPC.getNPCs().isEmpty()) {
             return;
         }
         new BukkitRunnable() {
@@ -677,9 +674,9 @@ public class Main extends JavaPlugin implements Listener {
     public boolean checkName(String name) {
         int npcSize = NpcData.getNPCs();
         String prename = name.length() > 16 ? name.substring(0, 16) : name;
-        for(int i = 1; i <= npcSize; i++) {
+        for (int i = 1; i <= npcSize; i++) {
             String currentName = NpcData.getName(i);
-            if(currentName.startsWith(prename)) {
+            if (currentName.startsWith(prename)) {
                 return false;
             }
         }

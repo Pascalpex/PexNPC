@@ -9,7 +9,7 @@ import java.io.IOException;
 
 public class Config {
 
-    public static File configFile = new File("plugins/PexNPC","config.yml");
+    public static File configFile = new File("plugins/PexNPC", "config.yml");
     public static FileConfiguration config = YamlConfiguration.loadConfiguration(configFile);
 
     public static void load() {
@@ -27,7 +27,7 @@ public class Config {
             if (!config.contains("updateChecker")) {
                 config.set("updateChecker", true);
             }
-            if(!config.contains("logNPCClickedCommands")) {
+            if (!config.contains("logNPCClickedCommands")) {
                 config.set("logNPCClickedCommands", false);
             }
             save();

@@ -19,9 +19,9 @@ public class TabCompletion implements org.bukkit.command.TabCompleter {
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         final List<String> completions = new ArrayList<>();
-        if(label.equalsIgnoreCase("pexnpc")) {
+        if (label.equalsIgnoreCase("pexnpc")) {
             if (sender instanceof Player) {
-                if(sender.hasPermission("pexnpc.command")) {
+                if (sender.hasPermission("pexnpc.command")) {
                     if (args.length == 1) {
                         completions.add("help");
                         completions.add("reload");
@@ -35,51 +35,31 @@ public class TabCompletion implements org.bukkit.command.TabCompleter {
                         completions.add("msg");
                         completions.add("item");
                         completions.add("clear");
-                        Iterator<String> iterator = completions.iterator();
-                        while(iterator.hasNext()) {
-                            if(!iterator.next().startsWith(args[0].toLowerCase())) {
-                                iterator.remove();
-                            }
-                        }
+                        completions.removeIf(s -> !s.startsWith(args[0].toLowerCase()));
                     }
                     if (args.length == 2) {
-                        if(args[0].equalsIgnoreCase("clear") || args[0].equalsIgnoreCase("delete") || args[0].equalsIgnoreCase("name") || args[0].equalsIgnoreCase("movehere") || args[0].equalsIgnoreCase("skin") || args[0].equalsIgnoreCase("cmd") || args[0].equalsIgnoreCase("msg") || args[0].equalsIgnoreCase("item")) {
-                            for(int i = 1; i <= NpcData.getNPCs(); i++) {
+                        if (args[0].equalsIgnoreCase("clear") || args[0].equalsIgnoreCase("delete") || args[0].equalsIgnoreCase("name") || args[0].equalsIgnoreCase("movehere") || args[0].equalsIgnoreCase("skin") || args[0].equalsIgnoreCase("cmd") || args[0].equalsIgnoreCase("msg") || args[0].equalsIgnoreCase("item")) {
+                            for (int i = 1; i <= NpcData.getNPCs(); i++) {
                                 completions.add(String.valueOf(i));
                             }
-                            Iterator<String> iterator = completions.iterator();
-                            while(iterator.hasNext()) {
-                                if(!iterator.next().startsWith(args[1])) {
-                                    iterator.remove();
-                                }
-                            }
+                            completions.removeIf(s -> !s.startsWith(args[1]));
                         }
                     }
                     if (args.length == 3) {
-                        if(args[0].equalsIgnoreCase("item")) {
+                        if (args[0].equalsIgnoreCase("item")) {
                             completions.add("HAND");
                             completions.add("OFFHAND");
                             completions.add("HELMET");
                             completions.add("CHESTPLATE");
                             completions.add("LEGGINGS");
                             completions.add("BOOTS");
-                            Iterator<String> iterator = completions.iterator();
-                            while(iterator.hasNext()) {
-                                if(!iterator.next().startsWith(args[2].toUpperCase())) {
-                                    iterator.remove();
-                                }
-                            }
+                            completions.removeIf(s -> !s.startsWith(args[2].toUpperCase()));
                         }
-                        if(args[0].equalsIgnoreCase("skin")) {
-                            for(Player player : Bukkit.getOnlinePlayers()) {
+                        if (args[0].equalsIgnoreCase("skin")) {
+                            for (Player player : Bukkit.getOnlinePlayers()) {
                                 completions.add(player.getName());
                             }
-                            Iterator<String> iterator = completions.iterator();
-                            while(iterator.hasNext()) {
-                                if(!iterator.next().toLowerCase().startsWith(args[2].toLowerCase())) {
-                                    iterator.remove();
-                                }
-                            }
+                            completions.removeIf(s -> !s.toLowerCase().startsWith(args[2].toLowerCase()));
                         }
                     }
                     Collections.sort(completions);

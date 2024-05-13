@@ -21,8 +21,8 @@ import java.util.*;
 public class PacketReader {
 
     Channel channel;
-    public static Map<UUID, Channel> channels = new HashMap<UUID, Channel>();
-    public static Map<UUID, Boolean> clicking = new HashMap<UUID, Boolean>();
+    public static Map<UUID, Channel> channels = new HashMap<>();
+    public static Map<UUID, Boolean> clicking = new HashMap<>();
 
     public void inject(Player player) throws NoSuchFieldException, IllegalAccessException {
         CraftPlayer craftPlayer = (CraftPlayer) player;
@@ -33,7 +33,7 @@ public class PacketReader {
         channel = connection.channel;
         channels.put(player.getUniqueId(), channel);
 
-        if(channel.pipeline().get("PacketInjector") != null) {
+        if (channel.pipeline().get("PacketInjector") != null) {
             return;
         }
 
@@ -42,21 +42,22 @@ public class PacketReader {
 
                 @Override
                 protected void decode(ChannelHandlerContext channel, ServerboundInteractPacket packet, List<Object> arg) {
-                        arg.add(packet);
-                        readPacket(player, packet);
+                    arg.add(packet);
+                    readPacket(player, packet);
                 }
 
             });
-        } catch (NoSuchElementException ignored) {} // Player is no longer online
+        } catch (NoSuchElementException ignored) {
+        } // Player is no longer online
 
     }
 
     public void uninject(Player player) {
         channel = channels.get(player.getUniqueId());
-        if(channel == null) {
+        if (channel == null) {
             return;
         }
-        if(channel.pipeline().get("PacketInjector") != null) {
+        if (channel.pipeline().get("PacketInjector") != null) {
             channel.pipeline().remove("PacketInjector");
         }
         channels.remove(player.getUniqueId());
@@ -64,21 +65,22 @@ public class PacketReader {
 
     public void readPacket(Player player, Packet<?> packet) {
 
-        if(packet.getClass().getSimpleName().equalsIgnoreCase("PacketPlayInUseEntity")) {
+        String packetName = packet.getClass().getSimpleName();
+        if (packetName.equalsIgnoreCase("PacketPlayInUseEntity") || packetName.equalsIgnoreCase("ServerboundInteractPacket")) {
 
             int id = (int) getValue(packet, "b");
 
-                for(ServerPlayer npc : NPC.getNPCs()) {
-                    if(npc.getId() == id) {
-                        if (!clicking.containsKey(player.getUniqueId())) {
-                            clicking.put(player.getUniqueId(), true);
-                            Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance(), () -> {
-                                clicking.remove(player.getUniqueId());
-                                Bukkit.getPluginManager().callEvent(new RightClickNPC(player, npc));
-                            }, 1);
-                        }
+            for (ServerPlayer npc : NPC.getNPCs()) {
+                if (npc.getId() == id) {
+                    if (!clicking.containsKey(player.getUniqueId())) {
+                        clicking.put(player.getUniqueId(), true);
+                        Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance(), () -> {
+                            clicking.remove(player.getUniqueId());
+                            Bukkit.getPluginManager().callEvent(new RightClickNPC(player, npc));
+                        }, 1);
                     }
                 }
+            }
 
         }
     }

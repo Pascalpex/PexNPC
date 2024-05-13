@@ -7,9 +7,7 @@ import com.mojang.authlib.properties.Property;
 import com.mojang.brigadier.LiteralMessage;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.Optionull;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
-import net.minecraft.network.chat.OutgoingChatMessage;
 import net.minecraft.network.chat.RemoteChatSession;
 import net.minecraft.network.protocol.game.*;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -40,30 +38,33 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.net.URL;
 
-import org.bukkit.scoreboard.Team;
 import sun.misc.Unsafe;
+
 import java.util.*;
 
 public class NPC {
 
     public static ItemStack nullStack = new ItemStack(Material.AIR);
 
-    private static List<ServerPlayer> NPCs = new ArrayList<ServerPlayer>();
+    private static final List<ServerPlayer> NPCs = new ArrayList<>();
 
-    public static HashMap<Integer, ServerPlayer> idMap = new HashMap<Integer, ServerPlayer>();
-    public static HashMap<Integer, String> cmdMap = new HashMap<Integer, String>();
-    public static HashMap<Integer, String> msgMap = new HashMap<Integer, String>();
+    public static HashMap<Integer, String> suffixes = new HashMap<>();
 
-    public static HashMap<Integer, World> worldMap = new HashMap<Integer, World>();
+    public static HashMap<Integer, ServerPlayer> idMap = new HashMap<>();
+    public static HashMap<Integer, String> cmdMap = new HashMap<>();
+    public static HashMap<Integer, String> msgMap = new HashMap<>();
 
-    public static HashMap<Integer, ItemStack> handMap = new HashMap<Integer, ItemStack>();
-    public static HashMap<Integer, ItemStack> offhandMap = new HashMap<Integer, ItemStack>();
-    public static HashMap<Integer, ItemStack> helmetMap = new HashMap<Integer, ItemStack>();
-    public static HashMap<Integer, ItemStack> chestplateMap = new HashMap<Integer, ItemStack>();
-    public static HashMap<Integer, ItemStack> leggingsMap = new HashMap<Integer, ItemStack>();
-    public static HashMap<Integer, ItemStack> bootsMap = new HashMap<Integer, ItemStack>();
+    public static HashMap<Integer, World> worldMap = new HashMap<>();
+
+    public static HashMap<Integer, ItemStack> handMap = new HashMap<>();
+    public static HashMap<Integer, ItemStack> offhandMap = new HashMap<>();
+    public static HashMap<Integer, ItemStack> helmetMap = new HashMap<>();
+    public static HashMap<Integer, ItemStack> chestplateMap = new HashMap<>();
+    public static HashMap<Integer, ItemStack> leggingsMap = new HashMap<>();
+    public static HashMap<Integer, ItemStack> bootsMap = new HashMap<>();
 
     static Unsafe unsafe;
+
     static {
         try {
 
@@ -75,7 +76,7 @@ public class NPC {
         }
     }
 
-    private static void setField(Object instance, String name, Object value) throws ReflectiveOperationException{
+    private static void setField(Object instance, String name, Object value) throws ReflectiveOperationException {
         Validate.notNull(instance);
         Field field = instance.getClass().getDeclaredField(name);
         field.setAccessible(true);
@@ -85,10 +86,10 @@ public class NPC {
     public static void createNPC(Player player, String name, String skin) throws ReflectiveOperationException {
         Location loc = player.getLocation();
         MinecraftServer server = ((CraftServer) Bukkit.getServer()).getServer();
-        ServerLevel world = ((CraftWorld)loc.getWorld()).getHandle();
+        ServerLevel world = ((CraftWorld) loc.getWorld()).getHandle();
         String trimmedName = name.substring(0, Math.min(name.length(), 16));
         String suffix = name.length() > 16 ? name.substring(16) : "";
-        if(trimmedName.endsWith("§")) {
+        if (trimmedName.endsWith("§")) {
             suffix = "§" + suffix;
         }
         GameProfile gameProfile = new GameProfile(UUID.randomUUID(), trimmedName);
@@ -100,10 +101,10 @@ public class NPC {
         int skinMode = Config.getSkinMode();
         switch (skinMode) {
             case 2:
-                watcher.set(new EntityDataAccessor<Byte>(17, EntityDataSerializers.BYTE), (byte)126);
+                watcher.set(new EntityDataAccessor<>(17, EntityDataSerializers.BYTE), (byte) 126);
                 break;
             case 3:
-                watcher.set(new EntityDataAccessor<Byte>(17, EntityDataSerializers.BYTE), (byte)127);
+                watcher.set(new EntityDataAccessor<>(17, EntityDataSerializers.BYTE), (byte) 127);
                 break;
             default:
                 break;
@@ -121,9 +122,10 @@ public class NPC {
 
         addNPCPacket(npc, suffix);
         NPCs.add(npc);
+        suffixes.put(npc.getId(), suffix);
 
         int id = 1;
-        if(NpcData.config.contains("npcs")) {
+        if (NpcData.config.contains("npcs")) {
             id = NpcData.config.getConfigurationSection("npcs").getKeys(false).size() + 1;
         }
         worldMap.put(npc.getId(), loc.getWorld());
@@ -136,7 +138,7 @@ public class NPC {
 
     public static void loadNPC(Location loc, GameProfile profile, int id, String cmd, String msg, ItemStack handItem, ItemStack offhandItem, ItemStack helmetItem, ItemStack chestplateItem, ItemStack leggingsItem, ItemStack bootsItem, String suffix) throws ReflectiveOperationException {
         MinecraftServer server = ((CraftServer) Bukkit.getServer()).getServer();
-        ServerLevel world = ((CraftWorld)loc.getWorld()).getHandle();
+        ServerLevel world = ((CraftWorld) loc.getWorld()).getHandle();
         ServerPlayer npc = new ServerPlayer(server, world, profile, ClientInformation.createDefault());
         npc.setPos(loc.getX(), loc.getY(), loc.getZ());
         npc.setYRot(loc.getYaw());
@@ -146,10 +148,10 @@ public class NPC {
         int skinMode = Config.getSkinMode();
         switch (skinMode) {
             case 2:
-                watcher.set(new EntityDataAccessor<Byte>(17, EntityDataSerializers.BYTE), (byte)126);
+                watcher.set(new EntityDataAccessor<>(17, EntityDataSerializers.BYTE), (byte) 126);
                 break;
             case 3:
-                watcher.set(new EntityDataAccessor<Byte>(17, EntityDataSerializers.BYTE), (byte)127);
+                watcher.set(new EntityDataAccessor<>(17, EntityDataSerializers.BYTE), (byte) 127);
                 break;
             default:
                 break;
@@ -170,6 +172,7 @@ public class NPC {
 
         addNPCPacket(npc, suffix);
         NPCs.add(npc);
+        suffixes.put(npc.getId(), suffix);
     }
 
     public static ServerPlayer getNPC(int id) {
@@ -177,8 +180,8 @@ public class NPC {
     }
 
     public static int getID(ServerPlayer npc) {
-        for(int id : idMap.keySet()) {
-            if(idMap.get(id).equals(npc)) {
+        for (int id : idMap.keySet()) {
+            if (idMap.get(id).equals(npc)) {
                 return id;
             }
         }
@@ -186,14 +189,14 @@ public class NPC {
     }
 
     public static String getCMD(int id) {
-        if(!cmdMap.containsKey(id)) {
+        if (!cmdMap.containsKey(id)) {
             return "";
         }
         return cmdMap.get(id);
     }
 
     public static String getMSG(int id) {
-        if(!msgMap.containsKey(id)) {
+        if (!msgMap.containsKey(id)) {
             return "";
         }
         return msgMap.get(id);
@@ -210,22 +213,22 @@ public class NPC {
             JsonObject property = new JsonParser().parse(reader2).getAsJsonObject().get("properties").getAsJsonArray().get(0).getAsJsonObject();
             String texture = property.get("value").getAsString();
             String signature = property.get("signature").getAsString();
-            return new String[] {texture, signature};
+            return new String[]{texture, signature};
 
         } catch (Exception e) {
-            ServerPlayer p = ((CraftPlayer)player).getHandle();
+            ServerPlayer p = ((CraftPlayer) player).getHandle();
             GameProfile profile = p.getGameProfile();
             Property property = profile.getProperties().get("textures").iterator().next();
             String texture = property.value();
             String signature = property.signature();
-            return new String[] {texture, signature};
+            return new String[]{texture, signature};
         }
     }
 
     public static void addNPCPacket(ServerPlayer npc, String suffix) {
-        for(Player player : Bukkit.getOnlinePlayers()) {
+        for (Player player : Bukkit.getOnlinePlayers()) {
             if (player.getWorld().equals(worldMap.get(npc.getId()))) {
-                ServerGamePacketListenerImpl connection = ((CraftPlayer)player).getHandle().connection;
+                ServerGamePacketListenerImpl connection = ((CraftPlayer) player).getHandle().connection;
                 connection.send(createInitPacket(npc));
                 connection.send(new ClientboundAddEntityPacket(npc));
                 connection.send(new ClientboundRotateHeadPacket(npc, (byte) (NpcData.getLocation(getID(npc)).getYaw() * 256f / 360f)));
@@ -257,13 +260,18 @@ public class NPC {
     }
 
     public static void addJoinPacket(Player player) {
-        for(ServerPlayer npc : NPCs) {
+        for (ServerPlayer npc : NPCs) {
             if (player.getWorld().equals(worldMap.get(npc.getId()))) {
-                ServerGamePacketListenerImpl connection = ((CraftPlayer)player).getHandle().connection;
+                ServerGamePacketListenerImpl connection = ((CraftPlayer) player).getHandle().connection;
                 connection.send(createInitPacket(npc));
                 connection.send(new ClientboundEntityEventPacket(npc, (byte) 1));
                 connection.send(new ClientboundAddEntityPacket(npc));
                 connection.send(new ClientboundRotateHeadPacket(npc, (byte) (NpcData.getLocation(getID(npc)).getYaw() * 256f / 360f)));
+                Scoreboard scoreboard = new Scoreboard();
+                PlayerTeam team = new PlayerTeam(scoreboard, npc.getUUID().toString());
+                team.setPlayerSuffix(ComponentUtils.fromMessage(new LiteralMessage(ChatColor.getLastColors(npc.getScoreboardName()) + suffixes.get(npc.getId()))));
+                connection.send(ClientboundSetPlayerTeamPacket.createAddOrModifyPacket(team, true));
+                connection.send(ClientboundSetPlayerTeamPacket.createPlayerPacket(team, npc.getScoreboardName(), ClientboundSetPlayerTeamPacket.Action.ADD));
 
                 List<Pair<EquipmentSlot, net.minecraft.world.item.ItemStack>> equipmentList = new ArrayList<>();
                 equipmentList.add(new Pair<>(EquipmentSlot.MAINHAND, CraftItemStack.asNMSCopy(handMap.get(npc.getId()))));
@@ -285,7 +293,7 @@ public class NPC {
 
                 SynchedEntityData entityData = npc.getEntityData();
                 if (!entityData.isDirty()) {
-                    entityData.markDirty(new EntityDataAccessor<Byte>(17, EntityDataSerializers.BYTE));
+                    entityData.markDirty(new EntityDataAccessor<>(17, EntityDataSerializers.BYTE));
                 }
                 connection.send(new ClientboundSetEntityDataPacket(npc.getId(), entityData.packDirty()));
             }
@@ -298,7 +306,7 @@ public class NPC {
     }
 
     public static void removeNPC(Player player, ServerPlayer npc) {
-        ServerGamePacketListenerImpl connection = ((CraftPlayer)player).getHandle().connection;
+        ServerGamePacketListenerImpl connection = ((CraftPlayer) player).getHandle().connection;
         connection.send(new ClientboundRemoveEntitiesPacket(npc.getId()));
     }
 
@@ -319,6 +327,7 @@ public class NPC {
 
     /**
      * Constructs an initiation packet for the given npc using unsafe and reflection because the public constructors of the ClientboundPlayerInfoUpdatePacket class are not suitable
+     *
      * @param var0 npc to create the packet for
      * @return initiation packet
      */
@@ -327,7 +336,7 @@ public class NPC {
             ClientboundPlayerInfoUpdatePacket packet = (ClientboundPlayerInfoUpdatePacket) unsafe.allocateInstance(ClientboundPlayerInfoUpdatePacket.class);
             EnumSet<ClientboundPlayerInfoUpdatePacket.Action> actions = EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER);
             setField(packet, "b", actions);
-            ClientboundPlayerInfoUpdatePacket.Entry entry = new ClientboundPlayerInfoUpdatePacket.Entry(var0.getUUID(), var0.getGameProfile(), true, 0, var0.gameMode.getGameModeForPlayer(), var0.getTabListDisplayName(), (RemoteChatSession.Data) Optionull.map(var0.getChatSession(), RemoteChatSession::asData));
+            ClientboundPlayerInfoUpdatePacket.Entry entry = new ClientboundPlayerInfoUpdatePacket.Entry(var0.getUUID(), var0.getGameProfile(), true, 0, var0.gameMode.getGameModeForPlayer(), var0.getTabListDisplayName(), Optionull.map(var0.getChatSession(), RemoteChatSession::asData));
             List<ClientboundPlayerInfoUpdatePacket.Entry> entries = new ArrayList<>();
             entries.add(entry);
             setField(packet, "c", entries);

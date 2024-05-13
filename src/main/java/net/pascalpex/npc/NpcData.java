@@ -21,7 +21,7 @@ import java.util.UUID;
 
 public class NpcData {
 
-    public static File configFile = new File("plugins/PexNPC","npcData.yml");
+    public static File configFile = new File("plugins/PexNPC", "npcData.yml");
     public static FileConfiguration config = YamlConfiguration.loadConfiguration(configFile);
 
     public static ItemStack nullStack = new ItemStack(Material.AIR);
@@ -75,7 +75,7 @@ public class NpcData {
     }
 
     public static int getNPCs() {
-        if(!config.contains("npcs")) {
+        if (!config.contains("npcs")) {
             return 0;
         }
         return config.getConfigurationSection("npcs").getKeys(false).size();
@@ -96,13 +96,13 @@ public class NpcData {
     }
 
     public static void removeNPC(int id) {
-        if(!config.contains("npcs")) {
+        if (!config.contains("npcs")) {
             return;
         }
 
         config.set("npcs" + "." + id, null);
         int idCount = 1;
-        for(String section : config.getConfigurationSection("npcs").getKeys(false)) {
+        for (String section : config.getConfigurationSection("npcs").getKeys(false)) {
 
             World world = Bukkit.getWorld(config.getString("npcs" + "." + section + ".location" + ".world"));
             double x = config.getDouble("npcs" + "." + section + ".location" + ".x");
@@ -151,8 +151,8 @@ public class NpcData {
 
         save();
 
-        for(Player player : Bukkit.getOnlinePlayers()) {
-            for(ServerPlayer npc : NPC.getNPCs()) {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            for (ServerPlayer npc : NPC.getNPCs()) {
                 NPC.removeNPC(player, npc);
             }
         }
@@ -161,12 +161,12 @@ public class NpcData {
 
         NpcData.loadNPCs();
 
-        if(!Bukkit.getOnlinePlayers().isEmpty()) {
-            for(Player player : Bukkit.getOnlinePlayers()) {
-                if(NPC.getNPCs() == null) {
+        if (!Bukkit.getOnlinePlayers().isEmpty()) {
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                if (NPC.getNPCs() == null) {
                     return;
                 }
-                if(NPC.getNPCs().isEmpty()) {
+                if (NPC.getNPCs().isEmpty()) {
                     return;
                 }
                 NPC.addJoinPacket(player);
@@ -176,7 +176,7 @@ public class NpcData {
 
     public static void loadNPCs() {
 
-        if(!config.contains("npcs")) {
+        if (!config.contains("npcs")) {
             return;
         }
 
@@ -202,7 +202,7 @@ public class NpcData {
             String name = config.getString("npcs" + "." + npc + ".name");
             String trimmedName = name.substring(0, Math.min(name.length(), 16));
             String suffix = name.length() > 16 ? name.substring(16) : "";
-            if(trimmedName.endsWith("§")) {
+            if (trimmedName.endsWith("§")) {
                 suffix = "§" + suffix;
             }
             GameProfile gameProfile = new GameProfile(UUID.randomUUID(), trimmedName);
