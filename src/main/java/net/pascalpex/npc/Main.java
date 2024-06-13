@@ -95,7 +95,7 @@ public class Main extends JavaPlugin implements Listener {
                 NPC.addJoinPacket(player);
             }
         }
-        Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "PexNPC 1.21 von Pascalpex Aktiviert.");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "PexNPC 1.22 von Pascalpex Aktiviert.");
     }
 
     private void fetchNewestVersion() {
@@ -131,7 +131,7 @@ public class Main extends JavaPlugin implements Listener {
             }
         }
         this.getServer().getMessenger().unregisterOutgoingPluginChannel(this);
-        Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "PexNPC 1.21 von Pascalpex Deaktiviert.");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "PexNPC 1.22 von Pascalpex Deaktiviert.");
     }
 
     @Override
@@ -142,7 +142,7 @@ public class Main extends JavaPlugin implements Listener {
                 if (player.hasPermission("pexnpc.command")) {
 
                     if (args.length == 0) {
-                        player.sendMessage(prefix + "PexNPC 1.21 von Pascalpex");
+                        player.sendMessage(prefix + "PexNPC 1.22 von Pascalpex");
                         player.sendMessage(prefix + "Verfügbare Befehle:");
                         player.sendMessage(prefix + "/pexnpc help " + ChatColor.DARK_GRAY + "| " + ChatColor.GOLD + "Zeigt diese Seite an");
                         player.sendMessage(prefix + "/pexnpc reload " + ChatColor.DARK_GRAY + "| " + ChatColor.GOLD + "Lädt die NPCs und Dateien neu");
@@ -159,7 +159,7 @@ public class Main extends JavaPlugin implements Listener {
                     }
                     if (args.length == 1) {
                         if (args[0].equalsIgnoreCase("help")) {
-                            player.sendMessage(prefix + "PexNPC 1.21 von Pascalpex");
+                            player.sendMessage(prefix + "PexNPC 1.22 von Pascalpex");
                             player.sendMessage(prefix + "Verfügbare Befehle:");
                             player.sendMessage(prefix + "/pexnpc help " + ChatColor.DARK_GRAY + "| " + ChatColor.GOLD + "Zeigt diese Seite an");
                             player.sendMessage(prefix + "/pexnpc reload " + ChatColor.DARK_GRAY + "| " + ChatColor.GOLD + "Lädt die NPCs und Dateien neu");
@@ -213,7 +213,7 @@ public class Main extends JavaPlugin implements Listener {
                             for (int i = 1; i <= NpcData.getNPCs(); i++) {
                                 String name = NpcData.getName(i);
                                 Location loc = NpcData.getLocation(i);
-                                player.sendMessage(ChatColor.AQUA + "-" + " ID:" + i + ChatColor.GOLD + " Name: " + ChatColor.WHITE + name + ChatColor.AQUA + ChatColor.RED + " Welt: " + loc.getWorld().getName() + ChatColor.GREEN + " X: " + loc.getBlockX() + " Y: " + loc.getBlockY() + " Z: " + loc.getBlockZ());
+                                player.sendMessage(ChatColor.AQUA + "-" + " ID:" + i + ChatColor.GOLD + " Name: " + ChatColor.WHITE + name + ChatColor.AQUA + ChatColor.RED + " Welt: " + (loc.getWorld() == null ? "INVALID" : loc.getWorld().getName()) + ChatColor.GREEN + " X: " + loc.getBlockX() + " Y: " + loc.getBlockY() + " Z: " + loc.getBlockZ());
                             }
                         }
                     }

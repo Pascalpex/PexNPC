@@ -189,6 +189,10 @@ public class NpcData {
             float yaw = (float) config.getDouble("npcs" + "." + npc + ".location" + ".yaw");
             Location loc = new Location(world, x, y, z, yaw, pitch);
 
+            if(world == null) {
+                return;
+            }
+
             String cmd = config.getString("npcs" + "." + npc + ".command");
             String msg = config.getString("npcs" + "." + npc + ".message");
 
