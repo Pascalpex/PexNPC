@@ -7,6 +7,7 @@ import com.mojang.authlib.properties.Property;
 import com.mojang.brigadier.LiteralMessage;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.Optionull;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.network.chat.RemoteChatSession;
 import net.minecraft.network.protocol.game.*;
@@ -20,6 +21,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.Scoreboard;
 import net.pascalpex.npc.Config;
@@ -231,7 +233,8 @@ public class NPC {
             if (player.getWorld().equals(worldMap.get(npc.getId()))) {
                 ServerGamePacketListenerImpl connection = ((CraftPlayer) player).getHandle().connection;
                 connection.send(createInitPacket(npc));
-                connection.send(new ClientboundAddEntityPacket(npc, 0, npc.blockPosition()));
+                Vec3 pos = npc.position();
+                connection.send(new ClientboundAddEntityPacket(npc.getId(), npc.getUUID(), pos.x(), pos.y(), pos.z(), npc.getXRot(), npc.getYRot(), npc.getType(), 0, npc.getDeltaMovement(), npc.getYHeadRot()));
                 connection.send(new ClientboundRotateHeadPacket(npc, (byte) (NpcData.getLocation(getID(npc)).getYaw() * 256f / 360f)));
                 Scoreboard scoreboard = new Scoreboard();
                 PlayerTeam team = new PlayerTeam(scoreboard, npc.getUUID().toString());
@@ -266,7 +269,8 @@ public class NPC {
                 ServerGamePacketListenerImpl connection = ((CraftPlayer) player).getHandle().connection;
                 connection.send(createInitPacket(npc));
                 connection.send(new ClientboundEntityEventPacket(npc, (byte) 1));
-                connection.send(new ClientboundAddEntityPacket(npc, 0, npc.blockPosition()));
+                Vec3 pos = npc.position();
+                connection.send(new ClientboundAddEntityPacket(npc.getId(), npc.getUUID(), pos.x(), pos.y(), pos.z(), npc.getXRot(), npc.getYRot(), npc.getType(), 0, npc.getDeltaMovement(), npc.getYHeadRot()));
                 connection.send(new ClientboundRotateHeadPacket(npc, (byte) (NpcData.getLocation(getID(npc)).getYaw() * 256f / 360f)));
                 Scoreboard scoreboard = new Scoreboard();
                 PlayerTeam team = new PlayerTeam(scoreboard, npc.getUUID().toString());
