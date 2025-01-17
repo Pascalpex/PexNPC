@@ -30,6 +30,7 @@ public class TabCompletion implements org.bukkit.command.TabCompleter {
                         completions.add("delete");
                         completions.add("name");
                         completions.add("movehere");
+                        completions.add("tp");
                         completions.add("skin");
                         completions.add("cmd");
                         completions.add("msg");
@@ -38,7 +39,7 @@ public class TabCompletion implements org.bukkit.command.TabCompleter {
                         completions.removeIf(s -> !s.startsWith(args[0].toLowerCase()));
                     }
                     if (args.length == 2) {
-                        if (args[0].equalsIgnoreCase("clear") || args[0].equalsIgnoreCase("delete") || args[0].equalsIgnoreCase("name") || args[0].equalsIgnoreCase("movehere") || args[0].equalsIgnoreCase("skin") || args[0].equalsIgnoreCase("cmd") || args[0].equalsIgnoreCase("msg") || args[0].equalsIgnoreCase("item")) {
+                        if (args[0].equalsIgnoreCase("clear") || args[0].equalsIgnoreCase("delete") || args[0].equalsIgnoreCase("name") || args[0].equalsIgnoreCase("tp") || args[0].equalsIgnoreCase("movehere") || args[0].equalsIgnoreCase("skin") || args[0].equalsIgnoreCase("cmd") || args[0].equalsIgnoreCase("msg") || args[0].equalsIgnoreCase("item")) {
                             for (int i = 1; i <= NpcData.getNPCs(); i++) {
                                 completions.add(String.valueOf(i));
                             }

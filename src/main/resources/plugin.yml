@@ -1,6 +1,6 @@
 main: net.pascalpex.npc.Main
 name: PexNPC
-version: 1.25
+version: 1.26
 author: Pascalpex
 prefix: PexNPC
 softdepend:

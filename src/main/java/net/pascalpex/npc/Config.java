@@ -30,6 +30,9 @@ public class Config {
             if (!config.contains("logNPCClickedCommands")) {
                 config.set("logNPCClickedCommands", false);
             }
+            if (!config.contains("spectatorModeOnTeleport")) {
+                config.set("spectatorModeOnTeleport", true);
+            }
             save();
         } catch (IOException | InvalidConfigurationException e) {
             e.printStackTrace();
@@ -64,6 +67,10 @@ public class Config {
 
     public static int getSkinTimeout() {
         return config.getInt("skinTimeout");
+    }
+
+    public static boolean getSpectatorModeOnTeleport() {
+        return config.getBoolean("spectatorModeOnTeleport");
     }
 
 }

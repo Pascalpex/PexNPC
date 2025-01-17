@@ -1,6 +1,10 @@
 package net.pascalpex.npc;
 
 import me.clip.placeholderapi.PlaceholderAPI;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.hover.content.Text;
 import net.minecraft.server.level.ServerPlayer;
 import net.pascalpex.npc.events.RightClickNPC;
 import net.pascalpex.npc.metrics.Metrics;
@@ -8,10 +12,7 @@ import net.pascalpex.npc.util.BungeeMessageSender;
 import net.pascalpex.npc.util.NPC;
 import net.pascalpex.npc.util.PacketReader;
 import net.pascalpex.npc.util.TabCompletion;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -95,7 +96,7 @@ public class Main extends JavaPlugin implements Listener {
                 NPC.addJoinPacket(player);
             }
         }
-        Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "PexNPC 1.25 von Pascalpex Aktiviert.");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "PexNPC 1.26 von Pascalpex Aktiviert.");
     }
 
     private void fetchNewestVersion() {
@@ -131,7 +132,7 @@ public class Main extends JavaPlugin implements Listener {
             }
         }
         this.getServer().getMessenger().unregisterOutgoingPluginChannel(this);
-        Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "PexNPC 1.25 von Pascalpex Deaktiviert.");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "PexNPC 1.26 von Pascalpex Deaktiviert.");
     }
 
     @Override
@@ -142,7 +143,7 @@ public class Main extends JavaPlugin implements Listener {
                 if (player.hasPermission("pexnpc.command")) {
 
                     if (args.length == 0) {
-                        player.sendMessage(prefix + "PexNPC 1.25 von Pascalpex");
+                        player.sendMessage(prefix + "PexNPC 1.26 von Pascalpex");
                         player.sendMessage(prefix + "Verfügbare Befehle:");
                         player.sendMessage(prefix + "/pexnpc help " + ChatColor.DARK_GRAY + "| " + ChatColor.GOLD + "Zeigt diese Seite an");
                         player.sendMessage(prefix + "/pexnpc reload " + ChatColor.DARK_GRAY + "| " + ChatColor.GOLD + "Lädt die NPCs und Dateien neu");
@@ -156,10 +157,11 @@ public class Main extends JavaPlugin implements Listener {
                         player.sendMessage(prefix + "/pexnpc msg [ID] [MSG] " + ChatColor.DARK_GRAY + "| " + ChatColor.GOLD + "Legt die Nachricht eines NPC fest");
                         player.sendMessage(prefix + "/pexnpc item [ID] [SLOT] " + ChatColor.DARK_GRAY + "| " + ChatColor.GOLD + "Gibt einem NPC ein Item");
                         player.sendMessage(prefix + "/pexnpc clear [ID] " + ChatColor.DARK_GRAY + "| " + ChatColor.GOLD + "Löscht die Befehle, Nachrichten und Items eines NPC");
+                        player.sendMessage(prefix + "/pexnpc tp [ID] " + ChatColor.DARK_GRAY + "| " + ChatColor.GOLD + "Teleportiert dich zu einem NPC");
                     }
                     if (args.length == 1) {
                         if (args[0].equalsIgnoreCase("help")) {
-                            player.sendMessage(prefix + "PexNPC 1.25 von Pascalpex");
+                            player.sendMessage(prefix + "PexNPC 1.26 von Pascalpex");
                             player.sendMessage(prefix + "Verfügbare Befehle:");
                             player.sendMessage(prefix + "/pexnpc help " + ChatColor.DARK_GRAY + "| " + ChatColor.GOLD + "Zeigt diese Seite an");
                             player.sendMessage(prefix + "/pexnpc reload " + ChatColor.DARK_GRAY + "| " + ChatColor.GOLD + "Lädt die NPCs und Dateien neu");
@@ -173,6 +175,7 @@ public class Main extends JavaPlugin implements Listener {
                             player.sendMessage(prefix + "/pexnpc msg [ID] [MSG] " + ChatColor.DARK_GRAY + "| " + ChatColor.GOLD + "Legt die Nachricht eines NPC fest");
                             player.sendMessage(prefix + "/pexnpc item [ID] [SLOT] " + ChatColor.DARK_GRAY + "| " + ChatColor.GOLD + "Gibt einem NPC ein Item");
                             player.sendMessage(prefix + "/pexnpc clear [ID] " + ChatColor.DARK_GRAY + "| " + ChatColor.GOLD + "Löscht die Befehle, Nachrichten und Items eines NPC");
+                            player.sendMessage(prefix + "/pexnpc tp [ID] " + ChatColor.DARK_GRAY + "| " + ChatColor.GOLD + "Teleportiert dich zu einem NPC");
                         }
                         if (args[0].equalsIgnoreCase("reload")) {
                             Config.load();
@@ -213,7 +216,10 @@ public class Main extends JavaPlugin implements Listener {
                             for (int i = 1; i <= NpcData.getNPCs(); i++) {
                                 String name = NpcData.getName(i);
                                 Location loc = NpcData.getLocation(i);
-                                player.sendMessage(ChatColor.AQUA + "-" + " ID:" + i + ChatColor.GOLD + " Name: " + ChatColor.WHITE + name + ChatColor.AQUA + ChatColor.RED + " Welt: " + (loc.getWorld() == null ? "INVALID" : loc.getWorld().getName()) + ChatColor.GREEN + " X: " + loc.getBlockX() + " Y: " + loc.getBlockY() + " Z: " + loc.getBlockZ());
+                                TextComponent component = new TextComponent(TextComponent.fromLegacyText(ChatColor.AQUA + "-" + " ID:" + i + ChatColor.GOLD + " Name: " + ChatColor.WHITE + name + ChatColor.AQUA + ChatColor.RED + " Welt: " + (loc.getWorld() == null ? "INVALID" : loc.getWorld().getName()) + ChatColor.GREEN + " X: " + loc.getBlockX() + " Y: " + loc.getBlockY() + " Z: " + loc.getBlockZ()));
+                                component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/pexnpc tp " + i));
+                                component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text((new TextComponent(TextComponent.fromLegacyText(ChatColor.AQUA + "Klicke zum Teleportieren\nID: " + ChatColor.GOLD + i))))));
+                                player.spigot().sendMessage(component);
                             }
                         }
                     }
@@ -262,6 +268,21 @@ public class Main extends JavaPlugin implements Listener {
                                     NPC.removeNPC(p, npc);
                                 }
                                 player.sendMessage(prefix + "Der NPC wurde entfernt");
+                            } else {
+                                player.sendMessage(prefix + ChatColor.RED + "Bitte gib eine gültige ID an");
+                            }
+                        }
+                        if (args[0].equalsIgnoreCase("tp")) {
+                            int id;
+                            try {
+                                id = Integer.parseInt(args[1]);
+                            } catch (NumberFormatException e) {
+                                player.sendMessage(prefix + ChatColor.RED + "Bitte gib eine ID an");
+                                return true;
+                            }
+
+                            if (id != 0 && id <= NpcData.getNPCs()) {
+                                teleportPlayerToNpc(player, id);
                             } else {
                                 player.sendMessage(prefix + ChatColor.RED + "Bitte gib eine gültige ID an");
                             }
@@ -567,6 +588,15 @@ public class Main extends JavaPlugin implements Listener {
             sender.sendMessage(prefix + "Dieser Befehl ist nur für Spieler geeignet");
         }
         return true;
+    }
+
+    private void teleportPlayerToNpc(Player player, int id) {
+        if(Config.getSpectatorModeOnTeleport()) {
+            player.setGameMode(GameMode.SPECTATOR);
+        }
+        player.teleport(NpcData.getLocation(id));
+        player.playSound(player, Sound.ENTITY_ITEM_PICKUP, 1, 1);
+        player.sendMessage(prefix + "Du wurdest zum NPC mit der ID " + ChatColor.GOLD + id + ChatColor.AQUA + " teleportiert");
     }
 
     @EventHandler
