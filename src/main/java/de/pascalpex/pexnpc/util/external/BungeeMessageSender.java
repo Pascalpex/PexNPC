@@ -1,8 +1,8 @@
-package de.pascalpex.pexnpc.util;
+package de.pascalpex.pexnpc.util.external;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
-import de.pascalpex.pexnpc.Main;
+import de.pascalpex.pexnpc.PexNPC;
 import org.bukkit.entity.Player;
 
 public class BungeeMessageSender {
@@ -12,7 +12,7 @@ public class BungeeMessageSender {
         out.writeUTF(channel);
         out.writeUTF(argument);
 
-        player.sendPluginMessage(Main.getInstance(), "BungeeCord", out.toByteArray());
+        player.sendPluginMessage(PexNPC.getInstance(), "BungeeCord", out.toByteArray());
     }
 
 }

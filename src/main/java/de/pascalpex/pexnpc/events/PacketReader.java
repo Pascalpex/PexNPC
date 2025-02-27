@@ -1,6 +1,6 @@
 package de.pascalpex.pexnpc.events;
 
-import de.pascalpex.pexnpc.npc.NPC;
+import de.pascalpex.pexnpc.npc.PlaceableNPC;
 import de.pascalpex.pexnpc.util.ReflectionHelper;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
@@ -10,13 +10,12 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ServerboundInteractPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
-import de.pascalpex.pexnpc.Main;
+import de.pascalpex.pexnpc.PexNPC;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class PacketReader {
 
@@ -68,11 +67,11 @@ public class PacketReader {
 
             int id = (int) ReflectionHelper.getValue(packet, "b");
 
-            for (ServerPlayer npc : Main.getNpcs().stream().map(NPC::getServerPlayer).toList()) {
+            for (ServerPlayer npc : PexNPC.getPlacedNpcs().stream().map(PlaceableNPC::getServerPlayer).toList()) {
                 if (npc.getId() == id) {
                     if (!clicking.containsKey(player.getUniqueId())) {
                         clicking.put(player.getUniqueId(), true);
-                        Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance(), () -> {
+                        Bukkit.getScheduler().scheduleSyncDelayedTask(PexNPC.getInstance(), () -> {
                             clicking.remove(player.getUniqueId());
                             Bukkit.getPluginManager().callEvent(new RightClickNPC(player, npc));
                         }, 1);

@@ -19,7 +19,7 @@ public class Config {
                 configFile.createNewFile();
                 config.options().header("Skin Mode 1: No second layer, no cape     2: Only second layer     3: Second layer and cape");
                 config.set("skinMode", 2);
-                config.set("prefix", "&7[&ePexNPC&7]");
+                config.set("prefix", "<gray>[<yellow>PexNPC<gray>]");
                 config.set("skinTimeout", 40);
                 save();
             }
@@ -62,7 +62,7 @@ public class Config {
     }
 
     public static String getPrefix() {
-        return config.getString("prefix").replace("&", "§");
+        return config.getString("prefix");
     }
 
     public static int getSkinTimeout() {

@@ -1,0 +1,19 @@
+name: PexNPC
+version: '2.0'
+author: Pascalpex
+prefix: PexNPC
+main: de.pascalpex.pexnpc.PexNPC
+description: Lightweight, packet based NPC plugin with fast updates
+api-version: '1.21.4'
+bootstrapper: de.pascalpex.pexnpc.PexNPCBootstrap
+loader: de.pascalpex.pexnpc.PexNPCLoader
+dependencies:
+  server:
+    Multiverse-Core:
+      load: BEFORE
+      required: false
+      join-classpath: false
+    PlaceholderAPI:
+      load: BEFORE
+      required: false
+      join-classpath: true
