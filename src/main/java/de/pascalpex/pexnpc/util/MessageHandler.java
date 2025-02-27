@@ -8,7 +8,8 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
 public class MessageHandler {
     public static Component prefix = parse("");
-    private static final TextColor defaultColor = NamedTextColor.GOLD;
+    private static final TextColor defaultColor = NamedTextColor.AQUA;
+    private static final TextColor errorColor = NamedTextColor.RED;
     private static final MiniMessage mm = MiniMessage.miniMessage();
 
     public static Component parseSection(String legacyMessage) {
@@ -28,6 +29,10 @@ public class MessageHandler {
 
     public static Component basicMessage(String message) {
         return prefix.append(Component.text(" " + message).color(defaultColor));
+    }
+
+    public static Component errorMessage(String message) {
+        return prefix.append(Component.text(" " + message).color(errorColor));
     }
 
     public static Component prefixedMini(String miniMessage) {

@@ -1,22 +1,35 @@
 package de.pascalpex.pexnpc.commands;
 
 import de.pascalpex.pexnpc.PexNPC;
+import de.pascalpex.pexnpc.commands.subcommands.SubCommands;
 import de.pascalpex.pexnpc.files.NPCData;
+import de.pascalpex.pexnpc.util.MessageHandler;
 import io.papermc.paper.command.brigadier.BasicCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class PexNPCCommand implements BasicCommand {
     @Override
-    public void execute(CommandSourceStack commandSourceStack, String[] strings) {
+    public void execute(CommandSourceStack commandSourceStack, String @NotNull [] args) {
         CommandSender sender = commandSourceStack.getSender();
+        if(sender instanceof Player player) {
+            if(args.length == 0) {
+                SubCommands.HELP.getSubCommand().invoke(player, new String[0]);
+            }
+            for(SubCommands subCommand : SubCommands.values()) {
+                if(subCommand.getSubCommand().getLabel().equalsIgnoreCase(args[0])) {
+                    subCommand.getSubCommand().invoke(player, Arrays.copyOfRange(args, 1, args.length));
+                    return;
+                }
+            }
+        } else {
+            sender.sendMessage(MessageHandler.errorMessage("Dieser Befehl ist nur für Spieler geeignet"));
+        }
     }
 
     @Override
@@ -27,19 +40,9 @@ public class PexNPCCommand implements BasicCommand {
         if (sender instanceof Player) {
             if (sender.hasPermission("pexnpc.command")) {
                 if (args.length == 1) {
-                    completions.add("help");
-                    completions.add("reload");
-                    completions.add("create");
-                    completions.add("list");
-                    completions.add("delete");
-                    completions.add("name");
-                    completions.add("movehere");
-                    completions.add("tp");
-                    completions.add("skin");
-                    completions.add("cmd");
-                    completions.add("msg");
-                    completions.add("item");
-                    completions.add("clear");
+                    for(SubCommands subCommand : SubCommands.values()) {
+                        completions.add(subCommand.getSubCommand().getLabel());
+                    }
                     completions.removeIf(s -> !s.startsWith(args[0].toLowerCase()));
                 }
                 if (args.length == 2) {
