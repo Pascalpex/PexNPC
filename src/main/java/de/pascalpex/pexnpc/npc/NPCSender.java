@@ -4,11 +4,15 @@ import com.mojang.brigadier.LiteralMessage;
 import com.mojang.datafixers.util.Pair;
 import de.pascalpex.pexnpc.PexNPC;
 import de.pascalpex.pexnpc.files.Config;
+import net.minecraft.Optionull;
 import net.minecraft.network.chat.ComponentUtils;
+import net.minecraft.network.chat.RemoteChatSession;
+import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.*;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.player.PlayerModelPart;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.Scoreboard;
@@ -20,6 +24,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.UUID;
 
@@ -45,36 +50,54 @@ public class NPCSender {
     }
 
     public static void sendNpcToPlayers(PlaceableNPC placeableNPC) {
+        List<Packet<?>> packets = buildNPCPackets(placeableNPC);
         for(Player player : Bukkit.getOnlinePlayers()) {
+            ServerGamePacketListenerImpl connection = ((CraftPlayer) player).getHandle().connection;
             if(placeableNPC.getNpc().getLocation().getWorld().equals(player.getWorld())) {
-                sendNPC(placeableNPC, player);
+                sendNPC(placeableNPC, packets, connection);
             }
         }
     }
 
     public static void sendNpcsToPlayer(Player player) {
+        ServerGamePacketListenerImpl connection = ((CraftPlayer) player).getHandle().connection;
         for(PlaceableNPC placeableNPC : PexNPC.getPlacedNpcs()) {
+            List<Packet<?>> packets = buildNPCPackets(placeableNPC);
             if(placeableNPC.getNpc().getLocation().getWorld().equals(player.getWorld())) {
-                sendNPC(placeableNPC, player);
+                sendNPC(placeableNPC, packets, connection);
             }
         }
     }
 
-    private static void sendNPC(PlaceableNPC placeableNPC, Player player) {
+    private static void sendNPC(PlaceableNPC placeableNPC, List<Packet<?>> packets, ServerGamePacketListenerImpl connection) {
+        for(Packet<?> packet : packets) {
+            connection.send(packet);
+        }
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                List<UUID> npcList = new ArrayList<>();
+                npcList.add(placeableNPC.getServerPlayer().getUUID());
+                connection.send(new ClientboundPlayerInfoRemovePacket(npcList));
+            }
+        }.runTaskLaterAsynchronously(PexNPC.getInstance(), Config.getSkinTimeout());
+    }
+
+    private static List<Packet<?>> buildNPCPackets(PlaceableNPC placeableNPC) {
         NPC npc = placeableNPC.getNpc();
         ServerPlayer serverPlayer = placeableNPC.getServerPlayer();
+        List<Packet<?>> packets = new ArrayList<>();
 
-        ServerGamePacketListenerImpl connection = ((CraftPlayer) player).getHandle().connection;
-        connection.send(new ClientboundPlayerInfoUpdatePacket(ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER, serverPlayer));
-        // connection.send(new ClientboundEntityEventPacket(serverPlayer, (byte) 1));
+        packets.add(new ClientboundPlayerInfoUpdatePacket(EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER), new ClientboundPlayerInfoUpdatePacket.Entry(serverPlayer.getUUID(), serverPlayer.getGameProfile(), true, 0, serverPlayer.gameMode.getGameModeForPlayer(), serverPlayer.getTabListDisplayName(), serverPlayer.isModelPartShown(PlayerModelPart.HAT), 0, Optionull.map(serverPlayer.getChatSession(), RemoteChatSession::asData))));
         Vec3 pos = serverPlayer.position();
-        connection.send(new ClientboundAddEntityPacket(serverPlayer.getId(), serverPlayer.getUUID(), pos.x(), pos.y(), pos.z(), serverPlayer.getXRot(), serverPlayer.getYRot(), serverPlayer.getType(), 0, serverPlayer.getDeltaMovement(), serverPlayer.getYHeadRot()));
-        connection.send(new ClientboundRotateHeadPacket(serverPlayer, (byte) (npc.getLocation().getYaw() * 256f / 360f)));
+        packets.add(new ClientboundAddEntityPacket(serverPlayer.getId(), serverPlayer.getUUID(), pos.x(), pos.y(), pos.z(), serverPlayer.getXRot(), serverPlayer.getYRot(), serverPlayer.getType(), 0, serverPlayer.getDeltaMovement(), serverPlayer.getYHeadRot()));
+        packets.add(new ClientboundRotateHeadPacket(serverPlayer, (byte) (npc.getLocation().getYaw() * 256f / 360f)));
         Scoreboard scoreboard = new Scoreboard();
         PlayerTeam team = new PlayerTeam(scoreboard, serverPlayer.getUUID().toString());
         team.setPlayerSuffix(ComponentUtils.fromMessage(new LiteralMessage(ChatColor.getLastColors(serverPlayer.getScoreboardName()) + placeableNPC.getSuffix())));
-        connection.send(ClientboundSetPlayerTeamPacket.createAddOrModifyPacket(team, true));
-        connection.send(ClientboundSetPlayerTeamPacket.createPlayerPacket(team, serverPlayer.getScoreboardName(), ClientboundSetPlayerTeamPacket.Action.ADD));
+        packets.add(ClientboundSetPlayerTeamPacket.createAddOrModifyPacket(team, true));
+        packets.add(ClientboundSetPlayerTeamPacket.createPlayerPacket(team, serverPlayer.getScoreboardName(), ClientboundSetPlayerTeamPacket.Action.ADD));
 
         List<Pair<EquipmentSlot, net.minecraft.world.item.ItemStack>> equipmentList = new ArrayList<>();
         equipmentList.add(new Pair<>(EquipmentSlot.MAINHAND, CraftItemStack.asNMSCopy(npc.getHandItem())));
@@ -83,24 +106,9 @@ public class NPCSender {
         equipmentList.add(new Pair<>(EquipmentSlot.CHEST, CraftItemStack.asNMSCopy(npc.getChestplateItem())));
         equipmentList.add(new Pair<>(EquipmentSlot.LEGS, CraftItemStack.asNMSCopy(npc.getLeggingsItem())));
         equipmentList.add(new Pair<>(EquipmentSlot.FEET, CraftItemStack.asNMSCopy(npc.getBootsItem())));
-        connection.send(new ClientboundSetEquipmentPacket(serverPlayer.getId(), equipmentList));
+        packets.add(new ClientboundSetEquipmentPacket(serverPlayer.getId(), equipmentList));
 
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                List<UUID> npcList = new ArrayList<>();
-                npcList.add(serverPlayer.getUUID());
-                connection.send(new ClientboundPlayerInfoRemovePacket(npcList));
-            }
-        }.runTaskLaterAsynchronously(PexNPC.getInstance(), Config.getSkinTimeout());
-
-        /*
-        SynchedEntityData entityData = serverPlayer.getEntityData();
-        if (!entityData.isDirty()) {
-            entityData.markDirty(new EntityDataAccessor<>(17, EntityDataSerializers.BYTE));
-        }
-        connection.send(new ClientboundSetEntityDataPacket(serverPlayer.getId(), entityData.packDirty()));
-        */
+        return packets;
     }
 
     private static void removeNPC(PlaceableNPC placeableNPC, Player player) {

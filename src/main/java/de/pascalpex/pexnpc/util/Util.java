@@ -2,9 +2,12 @@ package de.pascalpex.pexnpc.util;
 
 import de.pascalpex.pexnpc.files.Config;
 import de.pascalpex.pexnpc.files.NPCData;
+import de.pascalpex.pexnpc.npc.NPC;
 import org.bukkit.GameMode;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+
+import java.util.List;
 
 public class Util {
 
@@ -18,11 +21,9 @@ public class Util {
     }
 
     public boolean checkName(String name) {
-        int npcSize = NPCData.getNpcCount();
         String prename = name.length() > 16 ? name.substring(0, 16) : name;
-        for (int i = 1; i <= npcSize; i++) {
-            String currentName = NPCData.getNpc(i).getName();
-            if (currentName.startsWith(prename)) {
+        for (NPC npc : NPCData.getAllNpcs()) {
+            if (npc.getName().startsWith(prename)) {
                 return false;
             }
         }

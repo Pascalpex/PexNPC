@@ -76,11 +76,16 @@ public class NPCData {
         save();
     }
 
-    public static int getNpcCount() {
+    public static long getNextID() {
         if (!config.contains("npcs")) {
-            return 0;
+            return 1;
         }
-        return config.getConfigurationSection("npcs").getKeys(false).size();
+        long maxId = 1;
+        for (String section : config.getConfigurationSection("npcs").getKeys(false)) {
+            long id = Long.parseLong(section);
+            maxId = Math.max(id, maxId);
+        }
+        return maxId + 1;
     }
 
     public static NPC getNpc(long id) {
@@ -124,59 +129,14 @@ public class NPCData {
         return config.getConfigurationSection("npcs").getKeys(false).stream().map(id -> getNpc(Long.parseLong(id))).filter(Objects::nonNull).toList();
     }
 
+
+
     public static void deleteNpc(NPC npc) {
         if (!config.contains("npcs")) {
             return;
         }
 
         config.set("npcs" + "." + npc.getId(), null);
-        long newID = 1;
-        for (String section : config.getConfigurationSection("npcs").getKeys(false)) {
-
-            World world = Bukkit.getWorld(config.getString("npcs" + "." + section + ".location" + ".world"));
-            double x = config.getDouble("npcs" + "." + section + ".location" + ".x");
-            double y = config.getDouble("npcs" + "." + section + ".location" + ".y");
-            double z = config.getDouble("npcs" + "." + section + ".location" + ".z");
-            float pitch = (float) config.getDouble("npcs" + "." + section + ".location" + ".pitch");
-            float yaw = (float) config.getDouble("npcs" + "." + section + ".location" + ".yaw");
-
-            ItemStack handItem = config.getItemStack("npcs" + "." + section + ".items" + ".HAND");
-            ItemStack offhandItem = config.getItemStack("npcs" + "." + section + ".items" + ".OFFHAND");
-            ItemStack helmetItem = config.getItemStack("npcs" + "." + section + ".items" + ".HELMET");
-            ItemStack chestplateItem = config.getItemStack("npcs" + "." + section + ".items" + ".CHESTPLATE");
-            ItemStack leggingsItem = config.getItemStack("npcs" + "." + section + ".items" + ".LEGGINGS");
-            ItemStack bootsItem = config.getItemStack("npcs" + "." + section + ".items" + ".BOOTS");
-
-            String cmd = config.getString("npcs" + "." + section + ".command");
-            String msg = config.getString("npcs" + "." + section + ".message");
-            String name = config.getString("npcs" + "." + section + ".name");
-            String skinTexture = config.getString("npcs" + "." + section + ".skin" + ".texture");
-            String skinSignature = config.getString("npcs" + "." + section + ".skin" + ".signature");
-
-            config.set("npcs." + section, null);
-
-            config.set("npcs" + "." + newID + ".name", name);
-            config.set("npcs" + "." + newID + ".command", cmd);
-            config.set("npcs" + "." + newID + ".message", msg);
-            config.set("npcs" + "." + newID + ".location" + ".x", x);
-            config.set("npcs" + "." + newID + ".location" + ".y", y);
-            config.set("npcs" + "." + newID + ".location" + ".z", z);
-            config.set("npcs" + "." + newID + ".location" + ".pitch", pitch);
-            config.set("npcs" + "." + newID + ".location" + ".yaw", yaw);
-            config.set("npcs" + "." + newID + ".location" + ".world", world.getName());
-
-            config.set("npcs" + "." + newID + ".items" + ".HAND", handItem);
-            config.set("npcs" + "." + newID + ".items" + ".OFFHAND", offhandItem);
-            config.set("npcs" + "." + newID + ".items" + ".HELMET", helmetItem);
-            config.set("npcs" + "." + newID + ".items" + ".CHESTPLATE", chestplateItem);
-            config.set("npcs" + "." + newID + ".items" + ".LEGGINGS", leggingsItem);
-            config.set("npcs" + "." + newID + ".items" + ".BOOTS", bootsItem);
-
-            config.set("npcs" + "." + newID + ".skin" + ".texture", skinTexture);
-            config.set("npcs" + "." + newID + ".skin" + ".signature", skinSignature);
-
-            newID++;
-        }
         save();
     }
 

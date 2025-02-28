@@ -36,7 +36,6 @@ public class PexNPC extends JavaPlugin {
         logger = getLogger();
         placedNPCs = new ArrayList<>();
         packetReader = new PacketReader();
-        versionChecker = new VersionChecker(pluginVersion);
 
         new Metrics(this, 14923);
 
@@ -46,6 +45,7 @@ public class PexNPC extends JavaPlugin {
         MessageHandler.prefix = MessageHandler.parse(Config.getPrefix());
         PlaceholderAPIAdapter.startup();
 
+        versionChecker = new VersionChecker(pluginVersion);
         versionChecker.clearUpdateNotified();
         if (Config.getUpdateChecker()) {
             versionChecker.fetchNewestVersion();
@@ -121,5 +121,11 @@ public class PexNPC extends JavaPlugin {
             NPCSender.sendNpcToPlayers(placeableNPC);
             placedNPCs.add(placeableNPC);
         }
+        Bukkit.getConsoleSender().sendMessage(MessageHandler.prefixedMini("Loaded <gold>" + npcs.size() + " <aqua>NPCs"));
     }
+
+    public static String getPluginVersion() {
+        return pluginVersion;
+    }
+
 }

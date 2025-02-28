@@ -21,6 +21,9 @@ public class PlaceholderAPIAdapter {
     }
 
     public static String replace(Player player, String message) {
+        if(!placeholdersEnabled) {
+            return message;
+        }
         return PlaceholderAPI.setPlaceholders(player, message);
     }
 

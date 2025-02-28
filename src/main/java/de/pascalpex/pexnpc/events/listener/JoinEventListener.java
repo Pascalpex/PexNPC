@@ -6,6 +6,7 @@ import de.pascalpex.pexnpc.files.Config;
 import de.pascalpex.pexnpc.npc.NPCSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
@@ -13,7 +14,7 @@ import java.util.logging.Level;
 
 public class JoinEventListener implements Listener {
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         if (Config.getUpdateChecker()) {

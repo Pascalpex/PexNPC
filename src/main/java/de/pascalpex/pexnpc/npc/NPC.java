@@ -37,7 +37,7 @@ public class NPC {
         this.location = location;
         this.name = name;
 
-        this.id = NPCData.getNpcCount() + 1;
+        this.id = NPCData.getNextID();
 
         command = "";
         message = "";

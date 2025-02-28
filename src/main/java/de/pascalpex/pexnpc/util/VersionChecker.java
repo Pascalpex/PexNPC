@@ -1,6 +1,9 @@
 package de.pascalpex.pexnpc.util;
 
-import de.pascalpex.pexnpc.PexNPC;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.event.HoverEventSource;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -17,17 +20,25 @@ public class VersionChecker {
     private final String pluginVersion;
     private final Set<String> updateNotified;
 
+    private static final String DOWNLOAD_LINK = "https://pascalpex.de/files/pexnpc/PexNPC.jar";
+
+    private final Component newVersionMessage;
+    private final Component downloadLinkMessage;
+
     public VersionChecker(String pluginVersion) {
         this.pluginVersion = pluginVersion;
         updateNotified = new HashSet<>();
+
+        newVersionMessage = MessageHandler.prefixedMini("Eine neue Version von PexNPC ist verfügbar: " + newestVersion);
+        downloadLinkMessage = MessageHandler.prefixedMini("Download hier: " + DOWNLOAD_LINK).clickEvent(ClickEvent.openUrl(DOWNLOAD_LINK)).hoverEvent(HoverEvent.showText(MessageHandler.parse("<aqua>Click to download")));
     }
 
     public void playerJoin(Player player) {
         if (!updateNotified.contains(player.getUniqueId().toString())) {
             if (!newestVersion.isEmpty()) {
                 if (!newestVersion.equals(pluginVersion)) {
-                    player.sendMessage(MessageHandler.basicMessage("Eine neue Version von PexNPC ist verfügbar: " + newestVersion));
-                    player.sendMessage(MessageHandler.basicMessage("Download hier: https://pascalpex.de/files/pexnpc/PexNPC.jar"));
+                    player.sendMessage(newVersionMessage);
+                    player.sendMessage(downloadLinkMessage);
                 }
             }
         }
@@ -47,10 +58,10 @@ public class VersionChecker {
             if ((str = in.readLine()) != null) {
                 newestVersion = str.toLowerCase();
                 if (!newestVersion.equals(pluginVersion)) {
-                    Bukkit.getConsoleSender().sendMessage(MessageHandler.basicMessage("Eine neue Version von PexNPC ist verfügbar: " + newestVersion));
-                    Bukkit.getConsoleSender().sendMessage(MessageHandler.basicMessage("Download hier: https://pascalpex.de/files/pexnpc/PexNPC.jar"));
+                    Bukkit.getConsoleSender().sendMessage(newVersionMessage);
+                    Bukkit.getConsoleSender().sendMessage(downloadLinkMessage);
                 } else {
-                    Bukkit.getConsoleSender().sendMessage(MessageHandler.basicMessage("Du verwendest die neuste Version von PexNPC: " + newestVersion));
+                    Bukkit.getConsoleSender().sendMessage(MessageHandler.prefixedMini("Du verwendest die neuste Version von PexNPC: " + newestVersion));
                 }
             }
             in.close();

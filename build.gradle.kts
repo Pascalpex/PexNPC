@@ -18,7 +18,6 @@ repositories {
 dependencies {
     testImplementation(platform("org.junit:junit-bom:5.12.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
-    implementation("net.kyori:adventure-text-minimessage:4.19.0")
     compileOnly("me.clip:placeholderapi:2.11.6")
     paperweight.paperDevBundle("1.21.4-R0.1-SNAPSHOT")
 }
