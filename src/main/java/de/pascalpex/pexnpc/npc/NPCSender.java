@@ -4,7 +4,6 @@ import com.mojang.brigadier.LiteralMessage;
 import com.mojang.datafixers.util.Pair;
 import de.pascalpex.pexnpc.PexNPC;
 import de.pascalpex.pexnpc.files.Config;
-import de.pascalpex.pexnpc.util.ReflectionHelper;
 import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.network.protocol.game.*;
 import net.minecraft.server.level.ServerPlayer;
@@ -66,7 +65,7 @@ public class NPCSender {
         ServerPlayer serverPlayer = placeableNPC.getServerPlayer();
 
         ServerGamePacketListenerImpl connection = ((CraftPlayer) player).getHandle().connection;
-        connection.send(ReflectionHelper.createInitPacket(serverPlayer));
+        connection.send(new ClientboundPlayerInfoUpdatePacket(ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER, serverPlayer));
         // connection.send(new ClientboundEntityEventPacket(serverPlayer, (byte) 1));
         Vec3 pos = serverPlayer.position();
         connection.send(new ClientboundAddEntityPacket(serverPlayer.getId(), serverPlayer.getUUID(), pos.x(), pos.y(), pos.z(), serverPlayer.getXRot(), serverPlayer.getYRot(), serverPlayer.getType(), 0, serverPlayer.getDeltaMovement(), serverPlayer.getYHeadRot()));

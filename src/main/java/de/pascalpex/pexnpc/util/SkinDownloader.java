@@ -18,12 +18,12 @@ import java.net.URL;
 public class SkinDownloader {
 
     public static NPCSkin downloadSkin(String playerName) throws IOException, URISyntaxException {
-        URL url = new URI("https://api.mojang.com/users/profiles/minecraft/" + playerName).toURL();
-        InputStreamReader profileReader = new InputStreamReader(url.openStream());
+        URL profileUrl = new URI("https://api.mojang.com/users/profiles/minecraft/" + playerName).toURL();
+        InputStreamReader profileReader = new InputStreamReader(profileUrl.openStream());
         String uuid = JsonParser.parseReader(profileReader).getAsJsonObject().get("id").getAsString();
 
-        URL url2 = new URI("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid + "?unsigned=false").toURL();
-        InputStreamReader skinReader = new InputStreamReader(url2.openStream());
+        URL skinUrl = new URI("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid + "?unsigned=false").toURL();
+        InputStreamReader skinReader = new InputStreamReader(skinUrl.openStream());
         JsonObject property = JsonParser.parseReader(skinReader).getAsJsonObject().get("properties").getAsJsonArray().get(0).getAsJsonObject();
         String texture = property.get("value").getAsString();
         String signature = property.get("signature").getAsString();

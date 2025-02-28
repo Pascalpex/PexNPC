@@ -1,11 +1,9 @@
 package de.pascalpex.pexnpc.events;
 
 import de.pascalpex.pexnpc.npc.PlaceableNPC;
-import de.pascalpex.pexnpc.util.ReflectionHelper;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
-import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ServerboundInteractPacket;
 import net.minecraft.server.level.ServerPlayer;
@@ -26,8 +24,7 @@ public class PacketReader {
     public void inject(Player player) throws NoSuchFieldException, IllegalAccessException {
         CraftPlayer craftPlayer = (CraftPlayer) player;
         ServerGamePacketListenerImpl serverConnection = craftPlayer.getHandle().connection;
-        Connection connection = (Connection) ReflectionHelper.getValue(serverConnection, "e");
-        channel = connection.channel;
+        channel = serverConnection.connection.channel;
         channels.put(player.getUniqueId(), channel);
 
         if (channel.pipeline().get("PacketInjector") != null) {
@@ -61,11 +58,8 @@ public class PacketReader {
     }
 
     public void readPacket(Player player, Packet<?> packet) {
-
-        String packetName = packet.getClass().getSimpleName();
-        if (packetName.equalsIgnoreCase("PacketPlayInUseEntity") || packetName.equalsIgnoreCase("ServerboundInteractPacket")) {
-
-            int id = (int) ReflectionHelper.getValue(packet, "b");
+        if (packet instanceof ServerboundInteractPacket serverboundInteractPacket) {
+            int id = serverboundInteractPacket.getEntityId();
 
             for (ServerPlayer npc : PexNPC.getPlacedNpcs().stream().map(PlaceableNPC::getServerPlayer).toList()) {
                 if (npc.getId() == id) {

@@ -2,7 +2,6 @@ package de.pascalpex.pexnpc.commands;
 
 import de.pascalpex.pexnpc.PexNPC;
 import de.pascalpex.pexnpc.commands.subcommands.SubCommands;
-import de.pascalpex.pexnpc.files.NPCData;
 import de.pascalpex.pexnpc.util.MessageHandler;
 import io.papermc.paper.command.brigadier.BasicCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
@@ -17,6 +16,9 @@ public class PexNPCCommand implements BasicCommand {
     @Override
     public void execute(CommandSourceStack commandSourceStack, String @NotNull [] args) {
         CommandSender sender = commandSourceStack.getSender();
+        if(sender != commandSourceStack.getExecutor()) {
+            sender.sendMessage(MessageHandler.errorMessage("Different senders and executors are currently not supported"));
+        }
         if(sender instanceof Player player) {
             if(args.length == 0) {
                 SubCommands.HELP.getSubCommand().invoke(player, new String[0]);
@@ -33,7 +35,7 @@ public class PexNPCCommand implements BasicCommand {
     }
 
     @Override
-    public Collection<String> suggest(CommandSourceStack commandSourceStack, String[] args) {
+    public @NotNull Collection<String> suggest(CommandSourceStack commandSourceStack, String @NotNull [] args) {
         CommandSender sender = commandSourceStack.getSender();
         final List<String> completions = new ArrayList<>();
 

@@ -30,7 +30,7 @@ public class NPCData {
             configFile.getParentFile().mkdirs();
             if (!configFile.exists()) {
                 configFile.createNewFile();
-                save();
+                config.save(configFile);
             }
             config.load(configFile);
         } catch (IOException | InvalidConfigurationException e) {
@@ -50,7 +50,7 @@ public class NPCData {
                     PexNPC.logger().log(Level.SEVERE, e.toString());
                 }
             }
-        }.runTask(PexNPC.getInstance());
+        }.runTaskAsynchronously(PexNPC.getInstance());
     }
 
     public static void saveNpc(NPC npc) {
