@@ -16,8 +16,6 @@ import java.net.URISyntaxException;
  */
 public class NPC {
 
-    public static ItemStack nullStack = new ItemStack(Material.AIR);
-
     private long id;
     private Location location;
     private String name;
@@ -26,12 +24,7 @@ public class NPC {
     private String command;
     private String message;
 
-    private ItemStack handItem;
-    private ItemStack offhandItem;
-    private ItemStack helmetItem;
-    private ItemStack chestplateItem;
-    private ItemStack leggingsItem;
-    private ItemStack bootsItem;
+    private NPCEquipment equipment;
 
     public NPC(Location location, String name, String skinName, Player fallbackSkin) {
         this.location = location;
@@ -42,12 +35,7 @@ public class NPC {
         command = "";
         message = "";
 
-        handItem = nullStack;
-        offhandItem = nullStack;
-        helmetItem = nullStack;
-        chestplateItem = nullStack;
-        leggingsItem = nullStack;
-        bootsItem = nullStack;
+        equipment = new NPCEquipment();
 
         try {
             this.skin = SkinDownloader.downloadSkin(skinName);
@@ -56,19 +44,14 @@ public class NPC {
         }
     }
 
-    public NPC(long id, Location location, String name, NPCSkin skin, String command, String message, ItemStack handItem, ItemStack offhandItem, ItemStack helmetItem, ItemStack chestplateItem, ItemStack leggingsItem, ItemStack bootsItem) {
+    public NPC(long id, Location location, String name, NPCSkin skin, String command, String message, NPCEquipment equipment) {
         this.id = id;
         this.location = location;
         this.name = name;
         this.skin = skin;
         this.command = command;
         this.message = message;
-        this.handItem = handItem;
-        this.offhandItem = offhandItem;
-        this.helmetItem = helmetItem;
-        this.chestplateItem = chestplateItem;
-        this.leggingsItem = leggingsItem;
-        this.bootsItem = bootsItem;
+        this.equipment = equipment;
     }
 
     public long getId() {
@@ -119,51 +102,11 @@ public class NPC {
         this.message = message;
     }
 
-    public ItemStack getHandItem() {
-        return handItem;
+    public NPCEquipment getEquipment() {
+        return equipment;
     }
 
-    public void setHandItem(ItemStack handItem) {
-        this.handItem = handItem;
-    }
-
-    public ItemStack getOffhandItem() {
-        return offhandItem;
-    }
-
-    public void setOffhandItem(ItemStack offhandItem) {
-        this.offhandItem = offhandItem;
-    }
-
-    public ItemStack getHelmetItem() {
-        return helmetItem;
-    }
-
-    public void setHelmetItem(ItemStack helmetItem) {
-        this.helmetItem = helmetItem;
-    }
-
-    public ItemStack getChestplateItem() {
-        return chestplateItem;
-    }
-
-    public void setChestplateItem(ItemStack chestplateItem) {
-        this.chestplateItem = chestplateItem;
-    }
-
-    public ItemStack getLeggingsItem() {
-        return leggingsItem;
-    }
-
-    public void setLeggingsItem(ItemStack leggingsItem) {
-        this.leggingsItem = leggingsItem;
-    }
-
-    public ItemStack getBootsItem() {
-        return bootsItem;
-    }
-
-    public void setBootsItem(ItemStack bootsItem) {
-        this.bootsItem = bootsItem;
+    public void setEquipment(NPCEquipment equipment) {
+        this.equipment = equipment;
     }
 }

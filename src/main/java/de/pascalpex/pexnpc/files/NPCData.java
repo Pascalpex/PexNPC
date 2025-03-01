@@ -2,6 +2,7 @@ package de.pascalpex.pexnpc.files;
 
 import de.pascalpex.pexnpc.PexNPC;
 import de.pascalpex.pexnpc.npc.NPC;
+import de.pascalpex.pexnpc.npc.NPCEquipment;
 import de.pascalpex.pexnpc.npc.NPCSkin;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -65,12 +66,12 @@ public class NPCData {
         config.set("npcs" + "." + id + ".location" + ".pitch", loc.getPitch());
         config.set("npcs" + "." + id + ".location" + ".yaw", loc.getYaw());
         config.set("npcs" + "." + id + ".location" + ".world", loc.getWorld().getName());
-        config.set("npcs" + "." + id + ".items" + ".HAND", NPC.nullStack);
-        config.set("npcs" + "." + id + ".items" + ".OFFHAND", NPC.nullStack);
-        config.set("npcs" + "." + id + ".items" + ".HELMET", NPC.nullStack);
-        config.set("npcs" + "." + id + ".items" + ".CHESTPLATE", NPC.nullStack);
-        config.set("npcs" + "." + id + ".items" + ".LEGGINGS", NPC.nullStack);
-        config.set("npcs" + "." + id + ".items" + ".BOOTS", NPC.nullStack);
+        config.set("npcs" + "." + id + ".items" + ".HAND", NPCEquipment.EMPTY_STACK);
+        config.set("npcs" + "." + id + ".items" + ".OFFHAND", NPCEquipment.EMPTY_STACK);
+        config.set("npcs" + "." + id + ".items" + ".HELMET", NPCEquipment.EMPTY_STACK);
+        config.set("npcs" + "." + id + ".items" + ".CHESTPLATE", NPCEquipment.EMPTY_STACK);
+        config.set("npcs" + "." + id + ".items" + ".LEGGINGS", NPCEquipment.EMPTY_STACK);
+        config.set("npcs" + "." + id + ".items" + ".BOOTS", NPCEquipment.EMPTY_STACK);
         config.set("npcs" + "." + id + ".skin" + ".texture", npc.getSkin().texture());
         config.set("npcs" + "." + id + ".skin" + ".signature", npc.getSkin().signature());
         save();
@@ -117,8 +118,9 @@ public class NPCData {
         String skinSignature = config.getString("npcs" + "." + id + ".skin" + ".signature");
 
         NPCSkin skin = new NPCSkin(skinTexture, skinSignature);
+        NPCEquipment equipment = new NPCEquipment(handItem, offhandItem, helmetItem, chestplateItem, leggingsItem, bootsItem);
 
-        return new NPC(id, loc, name, skin, cmd, msg, handItem, offhandItem, helmetItem, chestplateItem, leggingsItem, bootsItem);
+        return new NPC(id, loc, name, skin, cmd, msg, equipment);
     }
 
     public static List<NPC> getAllNpcs() {

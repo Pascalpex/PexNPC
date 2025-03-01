@@ -1,0 +1,46 @@
+package de.pascalpex.pexnpc.commands.subcommands;
+
+import com.mojang.brigadier.Command;
+import com.mojang.brigadier.arguments.LongArgumentType;
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import de.pascalpex.pexnpc.PexNPC;
+import de.pascalpex.pexnpc.files.Config;
+import de.pascalpex.pexnpc.npc.NPC;
+import de.pascalpex.pexnpc.npc.PlaceableNPC;
+import de.pascalpex.pexnpc.util.MessageHandler;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
+import org.bukkit.GameMode;
+import org.bukkit.Sound;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+
+public class TpSubcommand implements Command<CommandSourceStack> {
+    @Override
+    public int run(CommandContext<CommandSourceStack> context) {
+        CommandSender sender = context.getSource().getSender();
+        Entity executor = context.getSource().getExecutor();
+        long id = LongArgumentType.getLong(context, "id");
+
+        PlaceableNPC placeableNPC = PexNPC.findNPCbyID(id);
+        if(placeableNPC == null) {
+            sender.sendMessage(MessageHandler.errorMessage("The provided ID is invalid"));
+            return SINGLE_SUCCESS;
+        }
+        NPC npc = placeableNPC.getNpc();
+
+        if(Config.getSpectatorModeOnTeleport() && executor instanceof Player player) {
+            player.setGameMode(GameMode.SPECTATOR);
+        }
+        if(executor != null) {
+            executor.teleport(npc.getLocation());
+        }
+        if(executor instanceof Player player) {
+            player.playSound(player, Sound.ENTITY_ITEM_PICKUP, 1, 1);
+        }
+
+        sender.sendMessage(MessageHandler.prefixedMini("Teleported to the NPC with the ID <gold>" + npc.getId()));
+        return SINGLE_SUCCESS;
+    }
+}

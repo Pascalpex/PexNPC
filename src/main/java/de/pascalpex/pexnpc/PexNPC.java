@@ -114,7 +114,18 @@ public class PexNPC extends JavaPlugin {
         return null;
     }
 
+    public static PlaceableNPC findNPCbyID(long id) {
+        for(PlaceableNPC placeableNPC : PexNPC.getPlacedNpcs()) {
+            if(placeableNPC.getNpc().getId() == id) {
+                return placeableNPC;
+            }
+        }
+        return null;
+    }
+
     private static void loadAllNPCs() {
+        placedNPCs.clear();
+
         List<NPC> npcs = NPCData.getAllNpcs();
         for(NPC npc : npcs) {
             PlaceableNPC placeableNPC = new PlaceableNPC(npc);
@@ -122,6 +133,14 @@ public class PexNPC extends JavaPlugin {
             placedNPCs.add(placeableNPC);
         }
         Bukkit.getConsoleSender().sendMessage(MessageHandler.prefixedMini("Loaded <gold>" + npcs.size() + " <aqua>NPCs"));
+    }
+
+    public static void reload() {
+        NPCSender.removeEverything();
+
+        Config.load();
+        NPCData.load();
+        loadAllNPCs();
     }
 
     public static String getPluginVersion() {

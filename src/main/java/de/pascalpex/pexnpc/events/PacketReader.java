@@ -61,19 +61,17 @@ public class PacketReader {
         if (packet instanceof ServerboundInteractPacket serverboundInteractPacket) {
             int id = serverboundInteractPacket.getEntityId();
 
-            for (ServerPlayer npc : PexNPC.getPlacedNpcs().stream().map(PlaceableNPC::getServerPlayer).toList()) {
-                if (npc.getId() == id) {
-                    if (!clicking.containsKey(player.getUniqueId())) {
-                        clicking.put(player.getUniqueId(), true);
-                        Bukkit.getScheduler().scheduleSyncDelayedTask(PexNPC.getInstance(), () -> {
-                            clicking.remove(player.getUniqueId());
-                            Bukkit.getPluginManager().callEvent(new RightClickNPC(player, npc));
-                        }, 1);
-                    }
+            PlaceableNPC placeableNPC = PexNPC.findNPCbyMinecraftID(id);
+            if(placeableNPC != null) {
+                ServerPlayer serverPlayer = placeableNPC.getServerPlayer();
+                if (!clicking.containsKey(player.getUniqueId())) {
+                    clicking.put(player.getUniqueId(), true);
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(PexNPC.getInstance(), () -> {
+                        clicking.remove(player.getUniqueId());
+                        Bukkit.getPluginManager().callEvent(new RightClickNPC(player, serverPlayer));
+                    }, 1);
                 }
             }
-
         }
     }
-
 }
