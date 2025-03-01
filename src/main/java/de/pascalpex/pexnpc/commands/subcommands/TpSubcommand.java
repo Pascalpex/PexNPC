@@ -1,10 +1,7 @@
 package de.pascalpex.pexnpc.commands.subcommands;
 
 import com.mojang.brigadier.Command;
-import com.mojang.brigadier.arguments.LongArgumentType;
 import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import de.pascalpex.pexnpc.PexNPC;
 import de.pascalpex.pexnpc.files.Config;
 import de.pascalpex.pexnpc.npc.NPC;
 import de.pascalpex.pexnpc.npc.PlaceableNPC;
@@ -21,14 +18,7 @@ public class TpSubcommand implements Command<CommandSourceStack> {
     public int run(CommandContext<CommandSourceStack> context) {
         CommandSender sender = context.getSource().getSender();
         Entity executor = context.getSource().getExecutor();
-        long id = LongArgumentType.getLong(context, "id");
-
-        PlaceableNPC placeableNPC = PexNPC.findNPCbyID(id);
-        if(placeableNPC == null) {
-            sender.sendMessage(MessageHandler.errorMessage("The provided ID is invalid"));
-            return SINGLE_SUCCESS;
-        }
-        NPC npc = placeableNPC.getNpc();
+        NPC npc = context.getArgument("npc", PlaceableNPC.class).getNpc();
 
         if(Config.getSpectatorModeOnTeleport() && executor instanceof Player player) {
             player.setGameMode(GameMode.SPECTATOR);
