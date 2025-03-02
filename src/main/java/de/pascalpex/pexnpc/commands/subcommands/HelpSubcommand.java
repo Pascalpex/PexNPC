@@ -31,6 +31,7 @@ public class HelpSubcommand implements Command<CommandSourceStack> {
         sender.sendMessage(MessageHandler.prefixedMini("/pexnpc item [ID] [SLOT] <dark_gray>| <gold>Gives an item to a NPC").hoverEvent(hoverEvent).clickEvent(ClickEvent.suggestCommand("/pexnpc item")));
         sender.sendMessage(MessageHandler.prefixedMini("/pexnpc clear [ID] <dark_gray>| <gold>Clears the command, message and items of a NPC").hoverEvent(hoverEvent).clickEvent(ClickEvent.suggestCommand("/pexnpc clear")));
         sender.sendMessage(MessageHandler.prefixedMini("/pexnpc tp [ID] <dark_gray>| <gold>Teleports to a NPC").hoverEvent(hoverEvent).clickEvent(ClickEvent.suggestCommand("/pexnpc tp")));
+        sender.sendMessage(MessageHandler.prefixedMini("/pexnpc inspect <dark_gray>| <gold>Toggles the inspection mode").hoverEvent(hoverEvent).clickEvent(ClickEvent.suggestCommand("/pexnpc inspect")));
         return SINGLE_SUCCESS;
     }
 }
