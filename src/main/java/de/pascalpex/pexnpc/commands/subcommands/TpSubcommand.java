@@ -24,7 +24,6 @@ public class TpSubcommand implements Command<CommandSourceStack> {
             player.setGameMode(GameMode.SPECTATOR);
         }
         if (executor != null) {
-            executor.teleport(npc.getLocation());
             executor.teleportAsync(npc.getLocation()).thenAccept(success -> {
                 if (success) {
                     if (executor instanceof Player player) {
