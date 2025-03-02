@@ -24,9 +24,9 @@ public class ListSubcommand implements Command<CommandSourceStack> {
             NPC npc = placeableNPC.getNpc();
             String name = npc.getName();
             Location loc = npc.getLocation();
-            Component component = MessageHandler.prefixedMini("- ID:" + npc.getId() + " <gold>Name: <white>").append(MessageHandler.parseSection(name)).append(MessageHandler.parse(" <red>World: " + (loc.getWorld() == null ? "INVALID" : loc.getWorld().getName()) + " <green>X: " + loc.getBlockX() + " Y: " + loc.getBlockY() + " Z: " + loc.getBlockZ()));
+            Component component = MessageHandler.parse("<aqua>- ID:" + npc.getId() + " <gold>Name: <white>").append(MessageHandler.parseSection(name)).append(MessageHandler.parse(" <red>World: " + (loc.getWorld() == null ? "INVALID" : loc.getWorld().getName()) + " <green>X: " + loc.getBlockX() + " Y: " + loc.getBlockY() + " Z: " + loc.getBlockZ()));
 
-            if(sender instanceof Player) {
+            if (sender instanceof Player) {
                 component = component
                         .hoverEvent(HoverEvent.showText(MessageHandler.parse("<aqua>Click to teleport\nID: <gold>" + npc.getId())))
                         .clickEvent(ClickEvent.runCommand("/pexnpc tp " + npc.getId()));

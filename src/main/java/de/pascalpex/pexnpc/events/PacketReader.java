@@ -1,5 +1,6 @@
 package de.pascalpex.pexnpc.events;
 
+import de.pascalpex.pexnpc.PexNPC;
 import de.pascalpex.pexnpc.npc.PlaceableNPC;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
@@ -8,7 +9,6 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ServerboundInteractPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
-import de.pascalpex.pexnpc.PexNPC;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
@@ -43,7 +43,6 @@ public class PacketReader {
             });
         } catch (NoSuchElementException ignored) {
         } // Player is no longer online
-
     }
 
     public void uninject(Player player) {
@@ -62,14 +61,15 @@ public class PacketReader {
             int id = serverboundInteractPacket.getEntityId();
 
             PlaceableNPC placeableNPC = PexNPC.findNPCbyMinecraftID(id);
-            if(placeableNPC != null) {
+            if (placeableNPC != null) {
                 ServerPlayer serverPlayer = placeableNPC.getServerPlayer();
                 if (!clicking.containsKey(player.getUniqueId())) {
                     clicking.put(player.getUniqueId(), true);
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(PexNPC.getInstance(), () -> {
+                    Bukkit.getScheduler().callSyncMethod(PexNPC.getInstance(), () -> {
                         clicking.remove(player.getUniqueId());
-                        Bukkit.getPluginManager().callEvent(new RightClickNPC(player, serverPlayer));
-                    }, 1);
+                        Bukkit.getPluginManager().callEvent(new ClickNPCEvent(player, serverPlayer));
+                        return null;
+                    });
                 }
             }
         }

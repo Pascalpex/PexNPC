@@ -16,15 +16,19 @@ import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.CraftWorld;
 
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Represents a NPC that is currently placed in the world
  */
 public class PlaceableNPC {
 
+    private static final Pattern LEGACY_FINDER = Pattern.compile("§[0-9a-fk-or]");
+
     private NPC npc;
-    private ServerPlayer serverPlayer;
-    private String actualName;
+    private final ServerPlayer serverPlayer;
+    private final String actualName;
     private String suffix;
 
     public ServerPlayer getServerPlayer() {
@@ -40,6 +44,14 @@ public class PlaceableNPC {
         if (actualName.endsWith("§")) {
             suffix = "§" + suffix;
         }
+        Matcher legacyMatcher = LEGACY_FINDER.matcher(actualName);
+        StringBuilder builder = new StringBuilder();
+        while (legacyMatcher.find()) {
+            builder.append(legacyMatcher.group());
+        }
+        builder.append(suffix);
+        suffix = builder.toString();
+
         GameProfile gameProfile = new GameProfile(UUID.randomUUID(), actualName);
         NPCSkin skin = npc.getSkin();
         gameProfile.getProperties().put("textures", new Property("textures", skin.texture(), skin.signature()));
@@ -76,23 +88,7 @@ public class PlaceableNPC {
         this.npc = npc;
     }
 
-    public void setServerPlayer(ServerPlayer serverPlayer) {
-        this.serverPlayer = serverPlayer;
-    }
-
-    public String getActualName() {
-        return actualName;
-    }
-
-    public void setActualName(String actualName) {
-        this.actualName = actualName;
-    }
-
     public String getSuffix() {
         return suffix;
-    }
-
-    public void setSuffix(String suffix) {
-        this.suffix = suffix;
     }
 }

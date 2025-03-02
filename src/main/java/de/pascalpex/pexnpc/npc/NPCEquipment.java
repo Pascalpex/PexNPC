@@ -19,7 +19,7 @@ public class NPCEquipment {
     public NPCEquipment() {
         equipment = new HashMap<>();
 
-        for(NPCItemSlot slot : NPCItemSlot.values()) {
+        for (NPCItemSlot slot : NPCItemSlot.values()) {
             equipment.put(slot, EMPTY_STACK);
         }
     }
@@ -37,9 +37,17 @@ public class NPCEquipment {
 
     public List<Pair<EquipmentSlot, net.minecraft.world.item.ItemStack>> getAsMCList() {
         List<Pair<EquipmentSlot, net.minecraft.world.item.ItemStack>> equipmentList = new ArrayList<>();
-        for(Map.Entry<NPCItemSlot, ItemStack> item : equipment.entrySet()) {
+        for (Map.Entry<NPCItemSlot, ItemStack> item : equipment.entrySet()) {
             equipmentList.add(new Pair<>(item.getKey().getMcSlot(), CraftItemStack.asNMSCopy(item.getValue())));
         }
         return equipmentList;
+    }
+
+    public void updateItem(NPCItemSlot slot, ItemStack item) {
+        equipment.put(slot, item);
+    }
+
+    public ItemStack getItem(NPCItemSlot slot) {
+        return equipment.get(slot);
     }
 }

@@ -8,8 +8,8 @@ import de.pascalpex.pexnpc.npc.NPC;
 import de.pascalpex.pexnpc.npc.NPCSender;
 import de.pascalpex.pexnpc.npc.PlaceableNPC;
 import de.pascalpex.pexnpc.util.MessageHandler;
-import de.pascalpex.pexnpc.util.external.Metrics;
 import de.pascalpex.pexnpc.util.VersionChecker;
+import de.pascalpex.pexnpc.util.external.Metrics;
 import de.pascalpex.pexnpc.util.external.PlaceholderAPIAdapter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -47,9 +47,6 @@ public class PexNPC extends JavaPlugin {
 
         versionChecker = new VersionChecker(pluginVersion);
         versionChecker.clearUpdateNotified();
-        if (Config.getUpdateChecker()) {
-            versionChecker.fetchNewestVersion();
-        }
 
         this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
@@ -81,6 +78,8 @@ public class PexNPC extends JavaPlugin {
         NPCSender.removeEverything();
         placedNPCs.clear();
 
+        NPCClickListener.inspectors.clear();
+
         this.getServer().getMessenger().unregisterOutgoingPluginChannel(this);
         Bukkit.getConsoleSender().sendMessage(MessageHandler.prefixedMini("<red>PexNPC " + pluginVersion + " von Pascalpex wurde deaktiviert."));
     }
@@ -101,13 +100,9 @@ public class PexNPC extends JavaPlugin {
         return versionChecker;
     }
 
-    public static PacketReader getPacketReader() {
-        return packetReader;
-    }
-
     public static PlaceableNPC findNPCbyMinecraftID(int id) {
-        for(PlaceableNPC placeableNPC : PexNPC.getPlacedNpcs()) {
-            if(placeableNPC.getServerPlayer().getId() == id) {
+        for (PlaceableNPC placeableNPC : PexNPC.getPlacedNpcs()) {
+            if (placeableNPC.getServerPlayer().getId() == id) {
                 return placeableNPC;
             }
         }
@@ -115,8 +110,8 @@ public class PexNPC extends JavaPlugin {
     }
 
     public static PlaceableNPC findNPCbyID(long id) {
-        for(PlaceableNPC placeableNPC : PexNPC.getPlacedNpcs()) {
-            if(placeableNPC.getNpc().getId() == id) {
+        for (PlaceableNPC placeableNPC : PexNPC.getPlacedNpcs()) {
+            if (placeableNPC.getNpc().getId() == id) {
                 return placeableNPC;
             }
         }
@@ -127,7 +122,7 @@ public class PexNPC extends JavaPlugin {
         placedNPCs.clear();
 
         List<NPC> npcs = NPCData.getAllNpcs();
-        for(NPC npc : npcs) {
+        for (NPC npc : npcs) {
             PlaceableNPC placeableNPC = new PlaceableNPC(npc);
             NPCSender.sendNpcToPlayers(placeableNPC);
             placedNPCs.add(placeableNPC);
@@ -135,11 +130,27 @@ public class PexNPC extends JavaPlugin {
         Bukkit.getConsoleSender().sendMessage(MessageHandler.prefixedMini("Loaded <gold>" + npcs.size() + " <aqua>NPCs"));
     }
 
-    public static void reload() {
+    public void reload() {
         NPCSender.removeEverything();
+
+        this.getServer().getMessenger().unregisterOutgoingPluginChannel(this);
+        this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            try {
+                packetReader.uninject(player);
+                packetReader.inject(player);
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                logger.log(Level.SEVERE, "Could not inject the PacketReader!");
+            }
+        }
+
+        NPCClickListener.inspectors.clear();
 
         Config.load();
         NPCData.load();
+        MessageHandler.prefix = MessageHandler.parse(Config.getPrefix());
+
         loadAllNPCs();
     }
 

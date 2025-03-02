@@ -3,6 +3,7 @@ package de.pascalpex.pexnpc.files;
 import de.pascalpex.pexnpc.PexNPC;
 import de.pascalpex.pexnpc.npc.NPC;
 import de.pascalpex.pexnpc.npc.NPCEquipment;
+import de.pascalpex.pexnpc.npc.NPCItemSlot;
 import de.pascalpex.pexnpc.npc.NPCSkin;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -59,26 +60,27 @@ public class NPCData {
         long id = npc.getId();
 
         config.set("npcs" + "." + id + ".name", npc.getName());
-        config.set("npcs" + "." + id + ".command", "");
+        config.set("npcs" + "." + id + ".command", npc.getCommand());
+        config.set("npcs" + "." + id + ".message", npc.getMessage());
         config.set("npcs" + "." + id + ".location" + ".x", loc.getX());
         config.set("npcs" + "." + id + ".location" + ".y", loc.getY());
         config.set("npcs" + "." + id + ".location" + ".z", loc.getZ());
         config.set("npcs" + "." + id + ".location" + ".pitch", loc.getPitch());
         config.set("npcs" + "." + id + ".location" + ".yaw", loc.getYaw());
         config.set("npcs" + "." + id + ".location" + ".world", loc.getWorld().getName());
-        config.set("npcs" + "." + id + ".items" + ".HAND", NPCEquipment.EMPTY_STACK);
-        config.set("npcs" + "." + id + ".items" + ".OFFHAND", NPCEquipment.EMPTY_STACK);
-        config.set("npcs" + "." + id + ".items" + ".HELMET", NPCEquipment.EMPTY_STACK);
-        config.set("npcs" + "." + id + ".items" + ".CHESTPLATE", NPCEquipment.EMPTY_STACK);
-        config.set("npcs" + "." + id + ".items" + ".LEGGINGS", NPCEquipment.EMPTY_STACK);
-        config.set("npcs" + "." + id + ".items" + ".BOOTS", NPCEquipment.EMPTY_STACK);
+        config.set("npcs" + "." + id + ".items" + ".HAND", npc.getEquipment().getItem(NPCItemSlot.HAND));
+        config.set("npcs" + "." + id + ".items" + ".OFFHAND", npc.getEquipment().getItem(NPCItemSlot.OFFHAND));
+        config.set("npcs" + "." + id + ".items" + ".HELMET", npc.getEquipment().getItem(NPCItemSlot.HELMET));
+        config.set("npcs" + "." + id + ".items" + ".CHESTPLATE", npc.getEquipment().getItem(NPCItemSlot.CHESTPLATE));
+        config.set("npcs" + "." + id + ".items" + ".LEGGINGS", npc.getEquipment().getItem(NPCItemSlot.LEGGINGS));
+        config.set("npcs" + "." + id + ".items" + ".BOOTS", npc.getEquipment().getItem(NPCItemSlot.BOOTS));
         config.set("npcs" + "." + id + ".skin" + ".texture", npc.getSkin().texture());
         config.set("npcs" + "." + id + ".skin" + ".signature", npc.getSkin().signature());
         save();
     }
 
     public static long getNextID() {
-        if (!config.contains("npcs")) {
+        if (!config.contains("npcs") || config.getConfigurationSection("npcs").getKeys(false).isEmpty()) {
             return 1;
         }
         long maxId = 1;
@@ -90,7 +92,11 @@ public class NPCData {
     }
 
     public static NPC getNpc(long id) {
-        World world = Bukkit.getWorld(config.getString("npcs" + "." + id + ".location" + ".world"));
+        String worldName = config.getString("npcs" + "." + id + ".location" + ".world");
+        if (worldName == null) {
+            return null;
+        }
+        World world = Bukkit.getWorld(worldName);
         double x = config.getDouble("npcs" + "." + id + ".location" + ".x");
         double y = config.getDouble("npcs" + "." + id + ".location" + ".y");
         double z = config.getDouble("npcs" + "." + id + ".location" + ".z");
@@ -98,7 +104,7 @@ public class NPCData {
         float yaw = (float) config.getDouble("npcs" + "." + id + ".location" + ".yaw");
         Location loc = new Location(world, x, y, z, yaw, pitch);
 
-        if(world == null) {
+        if (world == null) {
             return null;
         }
 
@@ -130,7 +136,6 @@ public class NPCData {
 
         return config.getConfigurationSection("npcs").getKeys(false).stream().map(id -> getNpc(Long.parseLong(id))).filter(Objects::nonNull).toList();
     }
-
 
 
     public static void deleteNpc(NPC npc) {

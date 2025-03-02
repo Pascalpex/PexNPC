@@ -14,7 +14,6 @@ public class RespawnEventListener implements Listener {
     public void onRespawn(PlayerRespawnEvent event) {
         Player player = event.getPlayer();
         new BukkitRunnable() {
-
             @Override
             public void run() {
                 NPCSender.sendNpcsToPlayer(player);

@@ -1,11 +1,14 @@
 package de.pascalpex.pexnpc.files;
 
+import de.pascalpex.pexnpc.PexNPC;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
+import java.util.logging.Level;
 
 public class Config {
 
@@ -17,7 +20,7 @@ public class Config {
             configFile.getParentFile().mkdirs();
             if (!configFile.exists()) {
                 configFile.createNewFile();
-                config.options().header("Skin Mode 1: No second layer, no cape     2: Only second layer     3: Second layer and cape");
+                config.options().setHeader(List.of("Skin Mode 1: No second layer, no cape     2: Only second layer     3: Second layer and cape"));
                 config.set("skinMode", 2);
                 config.set("prefix", "<gray>[<yellow>PexNPC<gray>]");
                 config.set("skinTimeout", 40);
@@ -35,7 +38,7 @@ public class Config {
             }
             save();
         } catch (IOException | InvalidConfigurationException e) {
-            e.printStackTrace();
+            PexNPC.logger().log(Level.SEVERE, "PexNPC was unable to load the config file");
         }
 
     }
@@ -44,8 +47,7 @@ public class Config {
         try {
             config.save(configFile);
         } catch (IOException e) {
-
-            e.printStackTrace();
+            PexNPC.logger().log(Level.SEVERE, "PexNPC was unable to save the config file");
         }
     }
 

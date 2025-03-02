@@ -13,7 +13,7 @@ public class ReloadSubcommand implements Command<CommandSourceStack> {
     public int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         CommandSender sender = context.getSource().getSender();
 
-        PexNPC.reload();
+        PexNPC.getInstance().reload();
         sender.sendMessage(MessageHandler.basicMessage("The plugin got reloaded"));
         return SINGLE_SUCCESS;
     }

@@ -1,8 +1,6 @@
 package de.pascalpex.pexnpc.commands;
 
-import com.mojang.brigadier.LiteralMessage;
 import com.mojang.brigadier.Message;
-import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
@@ -20,24 +18,24 @@ import java.util.concurrent.CompletableFuture;
 
 public class NPCSlotArgument implements CustomArgumentType.Converted<NPCItemSlot, String> {
     @Override
-    public NPCItemSlot convert(@NotNull String nativeType) throws CommandSyntaxException {
-        for(NPCItemSlot slot : NPCItemSlot.values()) {
-            if(slot.getName().equalsIgnoreCase(nativeType)) {
+    public @NotNull NPCItemSlot convert(@NotNull String nativeType) throws CommandSyntaxException {
+        for (NPCItemSlot slot : NPCItemSlot.values()) {
+            if (slot.getName().equalsIgnoreCase(nativeType)) {
                 return slot;
             }
         }
-        final Message exceptionMessage = MessageComponentSerializer.message().serialize(MessageHandler.errorMessage("The NPC slot you entered is invalid"));
+        final Message exceptionMessage = MessageComponentSerializer.message().serialize(MessageHandler.errorMessage("The NPC slot you entered is invalid. Valid options are HAND, OFFHAND, HELMET, CHESTPLATE, LEGGINGS and BOOTS"));
         throw new CommandSyntaxException(new SimpleCommandExceptionType(exceptionMessage), exceptionMessage);
     }
 
     @Override
-    public @NotNull ArgumentType getNativeType() {
+    public @NotNull ArgumentType<String> getNativeType() {
         return StringArgumentType.word();
     }
 
     @Override
     public <S> @NotNull CompletableFuture<Suggestions> listSuggestions(@NotNull CommandContext<S> context, @NotNull SuggestionsBuilder builder) {
-        for(NPCItemSlot slot : NPCItemSlot.values()) {
+        for (NPCItemSlot slot : NPCItemSlot.values()) {
             builder.suggest(slot.getName());
         }
         return builder.buildFuture();

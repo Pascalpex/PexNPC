@@ -1,18 +1,22 @@
 package de.pascalpex.pexnpc.util;
 
+import de.pascalpex.pexnpc.PexNPC;
+import de.pascalpex.pexnpc.files.Config;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
-import net.kyori.adventure.text.event.HoverEventSource;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Level;
 
 public class VersionChecker {
 
@@ -29,13 +33,26 @@ public class VersionChecker {
         this.pluginVersion = pluginVersion;
         updateNotified = new HashSet<>();
 
-        newVersionMessage = MessageHandler.prefixedMini("Eine neue Version von PexNPC ist verfügbar: " + newestVersion);
-        downloadLinkMessage = MessageHandler.prefixedMini("Download hier: " + DOWNLOAD_LINK).clickEvent(ClickEvent.openUrl(DOWNLOAD_LINK)).hoverEvent(HoverEvent.showText(MessageHandler.parse("<aqua>Click to download")));
+        if (Config.getUpdateChecker()) {
+            fetchNewestVersion();
+        }
+
+        newVersionMessage = MessageHandler.prefixedMini("A new version of PexNPC is available: <gold>" + newestVersion);
+        downloadLinkMessage = MessageHandler.prefixedMini("Download here: <gold>" + DOWNLOAD_LINK).clickEvent(ClickEvent.openUrl(DOWNLOAD_LINK)).hoverEvent(HoverEvent.showText(MessageHandler.parse("<aqua>Click to download")));
+
+        if (Config.getUpdateChecker()) {
+            if (!newestVersion.equals(pluginVersion)) {
+                Bukkit.getConsoleSender().sendMessage(newVersionMessage);
+                Bukkit.getConsoleSender().sendMessage(downloadLinkMessage);
+            } else {
+                Bukkit.getConsoleSender().sendMessage(MessageHandler.prefixedMini("You are using the newest version: <gold>" + newestVersion));
+            }
+        }
     }
 
-    public void playerJoin(Player player) {
+    public void notifyPlayer(Player player) {
         if (!updateNotified.contains(player.getUniqueId().toString())) {
-            if (!newestVersion.isEmpty()) {
+            if (!newestVersion.isBlank()) {
                 if (!newestVersion.equals(pluginVersion)) {
                     player.sendMessage(newVersionMessage);
                     player.sendMessage(downloadLinkMessage);
@@ -57,16 +74,10 @@ public class VersionChecker {
             String str;
             if ((str = in.readLine()) != null) {
                 newestVersion = str.toLowerCase();
-                if (!newestVersion.equals(pluginVersion)) {
-                    Bukkit.getConsoleSender().sendMessage(newVersionMessage);
-                    Bukkit.getConsoleSender().sendMessage(downloadLinkMessage);
-                } else {
-                    Bukkit.getConsoleSender().sendMessage(MessageHandler.prefixedMini("Du verwendest die neuste Version von PexNPC: " + newestVersion));
-                }
             }
             in.close();
-        } catch (Exception ignored) {
+        } catch (IOException | URISyntaxException e) {
+            PexNPC.logger().log(Level.WARNING, "PexNPC was unable to fetch newest version");
         }
     }
-
 }

@@ -17,7 +17,6 @@ public class TeleportEventListener implements Listener {
             return;
         }
         new BukkitRunnable() {
-
             @Override
             public void run() {
                 NPCSender.sendNpcsToPlayer(player);

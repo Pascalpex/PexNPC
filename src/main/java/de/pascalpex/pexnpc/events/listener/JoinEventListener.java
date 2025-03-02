@@ -19,7 +19,7 @@ public class JoinEventListener implements Listener {
         Player player = event.getPlayer();
         if (Config.getUpdateChecker()) {
             if (player.hasPermission("pexnpc.update")) {
-                PexNPC.getVersionChecker().playerJoin(player);
+                PexNPC.getVersionChecker().notifyPlayer(player);
             }
         }
 

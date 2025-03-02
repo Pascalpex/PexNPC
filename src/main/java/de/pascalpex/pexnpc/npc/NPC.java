@@ -1,12 +1,10 @@
 package de.pascalpex.pexnpc.npc;
 
-import de.pascalpex.pexnpc.files.Config;
 import de.pascalpex.pexnpc.files.NPCData;
 import de.pascalpex.pexnpc.util.SkinDownloader;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -108,5 +106,15 @@ public class NPC {
 
     public void setEquipment(NPCEquipment equipment) {
         this.equipment = equipment;
+    }
+
+    public boolean hasItems() {
+        boolean isEmpty = equipment.getItem(NPCItemSlot.HAND).getType() == Material.AIR
+                && equipment.getItem(NPCItemSlot.OFFHAND).getType() == Material.AIR
+                && equipment.getItem(NPCItemSlot.HELMET).getType() == Material.AIR
+                && equipment.getItem(NPCItemSlot.CHESTPLATE).getType() == Material.AIR
+                && equipment.getItem(NPCItemSlot.LEGGINGS).getType() == Material.AIR
+                && equipment.getItem(NPCItemSlot.BOOTS).getType() == Material.AIR;
+        return !isEmpty;
     }
 }

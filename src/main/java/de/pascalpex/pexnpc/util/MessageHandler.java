@@ -20,8 +20,8 @@ public class MessageHandler {
         return LegacyComponentSerializer.legacyAmpersand().deserialize(legacyMessage);
     }
 
-    public static Component parse(String miniMessage)  {
-        if(mm == null) {
+    public static Component parse(String miniMessage) {
+        if (mm == null) {
             return Component.text("");
         }
         return mm.deserialize(miniMessage);

@@ -19,9 +19,9 @@ import java.util.concurrent.CompletableFuture;
 
 public class IDArgument implements CustomArgumentType.Converted<PlaceableNPC, Long> {
     @Override
-    public PlaceableNPC convert(@NotNull Long nativeType) throws CommandSyntaxException {
+    public @NotNull PlaceableNPC convert(@NotNull Long nativeType) throws CommandSyntaxException {
         PlaceableNPC placeableNPC = PexNPC.findNPCbyID(nativeType);
-        if(placeableNPC != null) {
+        if (placeableNPC != null) {
             return placeableNPC;
         }
 
@@ -30,18 +30,19 @@ public class IDArgument implements CustomArgumentType.Converted<PlaceableNPC, Lo
     }
 
     @Override
-    public @NotNull ArgumentType getNativeType() {
+    public @NotNull ArgumentType<Long> getNativeType() {
         return LongArgumentType.longArg(1);
     }
 
     @Override
     public <S> @NotNull CompletableFuture<Suggestions> listSuggestions(@NotNull CommandContext<S> context, @NotNull SuggestionsBuilder builder) {
-        for(PlaceableNPC placeableNPC : PexNPC.getPlacedNpcs()) {
-            String currentInput = "";
-            try {
-                currentInput = context.getArgument("npc", Integer.class).toString();
-            } catch (IllegalArgumentException ignored) {}
-            if(String.valueOf(placeableNPC.getNpc().getId()).startsWith(currentInput)) {
+        String currentInput = "";
+        try {
+            currentInput = context.getInput().split(" ")[2];
+        } catch (ArrayIndexOutOfBoundsException ignored) {
+        } // Command does not contain the argument yet
+        for (PlaceableNPC placeableNPC : PexNPC.getPlacedNpcs()) {
+            if (String.valueOf(placeableNPC.getNpc().getId()).startsWith(currentInput)) {
                 builder.suggest(String.valueOf(placeableNPC.getNpc().getId()), MessageComponentSerializer.message().serialize(MessageHandler.parseSection(placeableNPC.getNpc().getName())));
             }
         }

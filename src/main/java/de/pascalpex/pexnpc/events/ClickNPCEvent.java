@@ -2,19 +2,17 @@ package de.pascalpex.pexnpc.events;
 
 import net.minecraft.server.level.ServerPlayer;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
-public class RightClickNPC extends Event implements Cancellable {
+public class ClickNPCEvent extends Event {
 
     private final Player player;
     private final ServerPlayer npc;
-    private boolean isCancelled;
     private static final HandlerList HANDLERS = new HandlerList();
 
-    public RightClickNPC(Player player, ServerPlayer npc) {
+    public ClickNPCEvent(Player player, ServerPlayer npc) {
         this.player = player;
         this.npc = npc;
     }
@@ -34,15 +32,5 @@ public class RightClickNPC extends Event implements Cancellable {
 
     public static HandlerList getHandlerList() {
         return HANDLERS;
-    }
-
-    @Override
-    public boolean isCancelled() {
-        return isCancelled;
-    }
-
-    @Override
-    public void setCancelled(boolean b) {
-        isCancelled = b;
     }
 }

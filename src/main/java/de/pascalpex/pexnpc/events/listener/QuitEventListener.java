@@ -13,6 +13,6 @@ public class QuitEventListener implements Listener {
         Player player = event.getPlayer();
         PacketReader reader = new PacketReader();
         reader.uninject(player);
+        NPCClickListener.inspectors.remove(player);
     }
-
 }

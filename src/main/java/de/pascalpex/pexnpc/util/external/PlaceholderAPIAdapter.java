@@ -11,17 +11,15 @@ public class PlaceholderAPIAdapter {
 
     public static void startup() {
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") == null) {
-            Bukkit.getConsoleSender().sendMessage(MessageHandler.basicMessage("PlaceholderAPI konnte nicht gefunden werden!"));
-            Bukkit.getConsoleSender().sendMessage(MessageHandler.basicMessage("Placeholder werden nicht funktionieren"));
+            Bukkit.getConsoleSender().sendMessage(MessageHandler.basicMessage("PlaceholderAPI was not found, placeholders will be disabled"));
         } else {
             placeholdersEnabled = true;
-            Bukkit.getConsoleSender().sendMessage(MessageHandler.basicMessage("PlaceholderAPI wurde gefunden!"));
-            Bukkit.getConsoleSender().sendMessage(MessageHandler.basicMessage("Placeholder werden genutzt"));
+            Bukkit.getConsoleSender().sendMessage(MessageHandler.basicMessage("PlaceholderAPI was found, placeholders will be enabled"));
         }
     }
 
     public static String replace(Player player, String message) {
-        if(!placeholdersEnabled) {
+        if (!placeholdersEnabled) {
             return message;
         }
         return PlaceholderAPI.setPlaceholders(player, message);
