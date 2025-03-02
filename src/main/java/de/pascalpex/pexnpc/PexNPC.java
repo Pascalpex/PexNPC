@@ -67,7 +67,7 @@ public class PexNPC extends JavaPlugin {
         this.getServer().getPluginManager().registerEvents(new TeleportEventListener(), this);
         this.getServer().getPluginManager().registerEvents(new RespawnEventListener(), this);
 
-        Bukkit.getConsoleSender().sendMessage(MessageHandler.prefixedMini("<green>PexNPC " + pluginVersion + " von Pascalpex wurde aktiviert."));
+        Bukkit.getConsoleSender().sendMessage(MessageHandler.prefixedMini("<green>PexNPC " + pluginVersion + " by Pascalpex was activated"));
     }
 
     @Override
@@ -81,7 +81,7 @@ public class PexNPC extends JavaPlugin {
         NPCClickListener.inspectors.clear();
 
         this.getServer().getMessenger().unregisterOutgoingPluginChannel(this);
-        Bukkit.getConsoleSender().sendMessage(MessageHandler.prefixedMini("<red>PexNPC " + pluginVersion + " von Pascalpex wurde deaktiviert."));
+        Bukkit.getConsoleSender().sendMessage(MessageHandler.prefixedMini("<red>PexNPC " + pluginVersion + " by Pascalpex was deactivated"));
     }
 
     public static PexNPC getInstance() {
