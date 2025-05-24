@@ -21,18 +21,20 @@ public class PacketReader {
     public static Map<UUID, Channel> channels = new HashMap<>();
     public static Map<UUID, Boolean> clicking = new HashMap<>();
 
+    private static final String PACKET_INJECTOR_NAME = "PacketInjector";
+
     public void inject(Player player) throws NoSuchFieldException, IllegalAccessException {
         CraftPlayer craftPlayer = (CraftPlayer) player;
         ServerGamePacketListenerImpl serverConnection = craftPlayer.getHandle().connection;
         channel = serverConnection.connection.channel;
         channels.put(player.getUniqueId(), channel);
 
-        if (channel.pipeline().get("PacketInjector") != null) {
+        if (channel.pipeline().get(PACKET_INJECTOR_NAME) != null) {
             return;
         }
 
         try {
-            channel.pipeline().addAfter("decoder", "PacketInjector", new MessageToMessageDecoder<ServerboundInteractPacket>() {
+            channel.pipeline().addAfter("decoder", PACKET_INJECTOR_NAME, new MessageToMessageDecoder<ServerboundInteractPacket>() {
 
                 @Override
                 protected void decode(ChannelHandlerContext channel, ServerboundInteractPacket packet, List<Object> arg) {
@@ -50,8 +52,8 @@ public class PacketReader {
         if (channel == null) {
             return;
         }
-        if (channel.pipeline().get("PacketInjector") != null) {
-            channel.pipeline().remove("PacketInjector");
+        if (channel.pipeline().get(PACKET_INJECTOR_NAME) != null) {
+            channel.pipeline().remove(PACKET_INJECTOR_NAME);
         }
         channels.remove(player.getUniqueId());
     }
