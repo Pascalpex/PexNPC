@@ -23,8 +23,8 @@ import java.util.logging.Level;
 
 public class NPCData {
 
-    public static File configFile = new File("plugins/PexNPC", "npcData.yml");
-    public static FileConfiguration config = YamlConfiguration.loadConfiguration(configFile);
+    public static final File configFile = new File("plugins/PexNPC", "npcData.yml");
+    public static final FileConfiguration config = YamlConfiguration.loadConfiguration(configFile);
 
 
     public static void load() {

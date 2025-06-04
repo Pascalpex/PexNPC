@@ -37,7 +37,7 @@ public class MessageHandler {
 
     public static Component prefixedMini(String miniMessage) {
         Component miniComponent = parse("<aqua>" + miniMessage);
-        return prefix.append(Component.text(" ")).append(miniComponent);
+        return prefix.appendSpace().append(miniComponent);
     }
 
 }

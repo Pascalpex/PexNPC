@@ -11,7 +11,7 @@ PexNPC offers a few advantages over some other NPC plugins:
 - Lightweight and small in file size
 - Fast updates for new Minecraft versions. Most of the time, the updates arrive at the same day as the Paper API does
 
-Please note, that this plugin only supports the latest version of Minecraft. Older versions may or may not work.
+Please note that this plugin only supports the latest version of Minecraft. Older versions may or may not work.
 ## Building
 ```
 ./gradlew build

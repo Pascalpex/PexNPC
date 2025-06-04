@@ -17,7 +17,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class PexNPC extends JavaPlugin {
@@ -53,11 +52,7 @@ public class PexNPC extends JavaPlugin {
         loadAllNPCs();
 
         for (Player player : Bukkit.getOnlinePlayers()) {
-            try {
-                packetReader.inject(player);
-            } catch (NoSuchFieldException | IllegalAccessException e) {
-                logger.log(Level.SEVERE, "Could not inject the PacketReader!");
-            }
+            packetReader.inject(player);
         }
 
         // Listeners
@@ -137,12 +132,8 @@ public class PexNPC extends JavaPlugin {
         this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
         for (Player player : Bukkit.getOnlinePlayers()) {
-            try {
-                packetReader.uninject(player);
-                packetReader.inject(player);
-            } catch (NoSuchFieldException | IllegalAccessException e) {
-                logger.log(Level.SEVERE, "Could not inject the PacketReader!");
-            }
+            packetReader.uninject(player);
+            packetReader.inject(player);
         }
 
         NPCClickListener.inspectors.clear();

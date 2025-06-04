@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 /**
- * Represents a NPC that is savable / loadable from the config
+ * Represents an NPC that is savable / loadable from the config
  */
 public class NPC {
 

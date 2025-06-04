@@ -18,12 +18,12 @@ import java.util.*;
 public class PacketReader {
 
     Channel channel;
-    public static Map<UUID, Channel> channels = new HashMap<>();
-    public static Map<UUID, Boolean> clicking = new HashMap<>();
+    public static final Map<UUID, Channel> channels = new HashMap<>();
+    public static final Map<UUID, Boolean> clicking = new HashMap<>();
 
     private static final String PACKET_INJECTOR_NAME = "PacketInjector";
 
-    public void inject(Player player) throws NoSuchFieldException, IllegalAccessException {
+    public void inject(Player player) {
         CraftPlayer craftPlayer = (CraftPlayer) player;
         ServerGamePacketListenerImpl serverConnection = craftPlayer.getHandle().connection;
         channel = serverConnection.connection.channel;

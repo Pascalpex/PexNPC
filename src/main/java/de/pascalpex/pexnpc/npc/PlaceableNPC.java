@@ -20,7 +20,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Represents a NPC that is currently placed in the world
+ * Represents an NPC that is currently placed in the world
  */
 public class PlaceableNPC {
 
@@ -28,7 +28,6 @@ public class PlaceableNPC {
 
     private NPC npc;
     private final ServerPlayer serverPlayer;
-    private final String actualName;
     private String suffix;
 
     public ServerPlayer getServerPlayer() {
@@ -39,7 +38,7 @@ public class PlaceableNPC {
         this.npc = npc;
 
         String name = npc.getName();
-        actualName = name.substring(0, Math.min(name.length(), 16));
+        String actualName = name.substring(0, Math.min(name.length(), 16));
         suffix = name.length() > 16 ? name.substring(16) : "";
         if (actualName.endsWith("§")) {
             suffix = "§" + suffix;

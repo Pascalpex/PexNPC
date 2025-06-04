@@ -10,8 +10,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-import java.util.logging.Level;
-
 public class JoinEventListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -24,11 +22,7 @@ public class JoinEventListener implements Listener {
         }
 
         PacketReader reader = new PacketReader();
-        try {
-            reader.inject(player);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            PexNPC.logger().log(Level.SEVERE, "Could not inject the PacketReader!");
-        }
+        reader.inject(player);
         NPCSender.sendNpcsToPlayer(player);
     }
 

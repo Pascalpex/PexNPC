@@ -3,7 +3,6 @@ package de.pascalpex.pexnpc.commands.subcommands;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import de.pascalpex.pexnpc.PexNPC;
 import de.pascalpex.pexnpc.files.NPCData;
 import de.pascalpex.pexnpc.npc.NPC;
@@ -18,7 +17,7 @@ import org.bukkit.entity.Player;
 
 public class CreateSubcommand implements Command<CommandSourceStack> {
     @Override
-    public int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+    public int run(CommandContext<CommandSourceStack> context) {
         CommandSender sender = context.getSource().getSender();
         Entity executor = context.getSource().getExecutor();
 
