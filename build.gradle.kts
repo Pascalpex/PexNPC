@@ -1,6 +1,6 @@
 plugins {
     id("java")
-    id("io.papermc.paperweight.userdev") version "2.0.0-beta.17"
+    id("io.papermc.paperweight.userdev") version "2.0.0-beta.18"
 }
 
 group = "de.pascalpex"
@@ -16,10 +16,10 @@ repositories {
 }
 
 dependencies {
-    testImplementation(platform("org.junit:junit-bom:5.13.0"))
+    testImplementation(platform("org.junit:junit-bom:5.13.4"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     compileOnly("me.clip:placeholderapi:2.11.6")
-    paperweight.paperDevBundle("1.21.5-R0.1-SNAPSHOT")
+    paperweight.paperDevBundle("1.21.8-R0.1-SNAPSHOT")
 }
 
 java {
@@ -27,7 +27,7 @@ java {
 }
 
 tasks.assemble {
-    dependsOn(tasks.reobfJar)
+    dependsOn(tasks.jar)
 }
 tasks.test {
     useJUnitPlatform()
