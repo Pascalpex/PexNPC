@@ -73,6 +73,14 @@ public class NPCClickListener implements Listener {
 
         String cmd = placeableNPC.getNpc().getCommand();
         if (cmd != null && !cmd.isBlank()) {
+            if(cmd.startsWith("console:")) {
+                cmd = cmd.substring(8).replace("%player_name%", player.getName());
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd);
+                if (Config.getLogCommands()) {
+                    Bukkit.getConsoleSender().sendMessage(MessageHandler.prefixedMini("<aqua>Player <gold>" + player.getName() + " <aqua>used NPC with ID <gold>" + placeableNPC.getNpc().getId() + " <aqua>to dispatch console command: <gold>" + cmd));
+                }
+                return;
+            }
             if (Bukkit.getPluginCommand("server") == null && cmd.toLowerCase().startsWith("server")) {
                 BungeeMessageSender bungeeMessageSender = new BungeeMessageSender();
                 bungeeMessageSender.sendMessage("Connect", cmd.split(" ")[1], player);

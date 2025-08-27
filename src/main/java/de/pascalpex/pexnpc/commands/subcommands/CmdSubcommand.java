@@ -16,6 +16,13 @@ public class CmdSubcommand implements Command<CommandSourceStack> {
         PlaceableNPC placeableNPC = context.getArgument("npc", PlaceableNPC.class);
         String cmd = StringArgumentType.getString(context, "cmd");
 
+        if(cmd.startsWith("console:")) {
+            if(!sender.hasPermission("pexnpc.consolecommands")) {
+                sender.sendMessage(MessageHandler.errorMessage("You are not allowed to set console commands"));
+                return SINGLE_SUCCESS;
+            }
+        }
+
         placeableNPC.getNpc().setCommand(cmd);
         NPCData.saveNpc(placeableNPC.getNpc());
 
