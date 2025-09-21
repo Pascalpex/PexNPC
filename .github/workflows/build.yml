@@ -22,4 +22,4 @@ jobs:
         uses: actions/upload-artifact@v4.6.2
         with:
           name: PexNPC
-          path: build/libs/PexNPC-2.1.jar
+          path: build/libs/PexNPC-2.2.jar

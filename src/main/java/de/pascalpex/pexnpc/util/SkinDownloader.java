@@ -34,9 +34,9 @@ public class SkinDownloader {
     public static NPCSkin downloadSKin(Player player) {
         ServerPlayer p = ((CraftPlayer) player).getHandle();
         GameProfile profile = p.getGameProfile();
-        Property property = profile.getProperties().get("textures").iterator().next();
-        String texture = property.value();
-        String signature = property.signature();
+        Property property = profile.properties().get("textures").iterator().next();
+        String texture = property == null ? "" : property.value();
+        String signature = property == null ? "" : property.signature();
 
         return new NPCSkin(texture, signature);
     }

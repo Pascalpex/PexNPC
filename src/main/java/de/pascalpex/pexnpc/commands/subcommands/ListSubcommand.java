@@ -19,7 +19,7 @@ public class ListSubcommand implements Command<CommandSourceStack> {
     public int run(CommandContext<CommandSourceStack> context) {
         CommandSender sender = context.getSource().getSender();
 
-        sender.sendMessage(MessageHandler.basicMessage("All loaded NPCs:"));
+        sender.sendMessage(MessageHandler.prefixedMini("All loaded NPCs (<gold>" + PexNPC.getPlacedNpcs().size() + "<aqua>):"));
         for (PlaceableNPC placeableNPC : PexNPC.getPlacedNpcs()) {
             NPC npc = placeableNPC.getNpc();
             String name = npc.getName();

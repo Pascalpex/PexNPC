@@ -13,6 +13,7 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
+import net.minecraft.world.entity.Avatar;
 import net.minecraft.world.entity.player.PlayerModelPart;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.scores.PlayerTeam;
@@ -101,7 +102,7 @@ public class NPCSender {
 
         SynchedEntityData entityData = serverPlayer.getEntityData();
         if (!entityData.isDirty()) {
-            entityData.markDirty(new EntityDataAccessor<>(17, EntityDataSerializers.BYTE));
+            entityData.markDirty(new EntityDataAccessor<>(Avatar.DATA_PLAYER_MODE_CUSTOMISATION.id(), EntityDataSerializers.BYTE));
         }
         List<SynchedEntityData.DataValue<?>> dirtyEntityData = entityData.packDirty();
         if (dirtyEntityData != null) {

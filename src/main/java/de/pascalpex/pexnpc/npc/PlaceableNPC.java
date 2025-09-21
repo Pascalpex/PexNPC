@@ -1,7 +1,10 @@
 package de.pascalpex.pexnpc.npc;
 
+import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.Multimap;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
+import com.mojang.authlib.properties.PropertyMap;
 import de.pascalpex.pexnpc.files.Config;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -10,6 +13,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ClientInformation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Avatar;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.CraftServer;
@@ -51,9 +55,13 @@ public class PlaceableNPC {
         builder.append(suffix);
         suffix = builder.toString();
 
-        GameProfile gameProfile = new GameProfile(UUID.randomUUID(), actualName);
         NPCSkin skin = npc.getSkin();
-        gameProfile.getProperties().put("textures", new Property("textures", skin.texture(), skin.signature()));
+        Multimap<String, Property> profileProperties = new ImmutableMultimap.Builder<String, Property>()
+                .put("textures", new Property("textures", skin.texture(), skin.signature()))
+                .build();
+
+        GameProfile gameProfile = new GameProfile(UUID.randomUUID(), actualName, new PropertyMap(profileProperties));
+
 
         Location loc = npc.getLocation();
         MinecraftServer server = ((CraftServer) Bukkit.getServer()).getServer();
@@ -67,10 +75,10 @@ public class PlaceableNPC {
         int skinMode = Config.getSkinMode();
         switch (skinMode) {
             case 2:
-                watcher.set(new EntityDataAccessor<>(17, EntityDataSerializers.BYTE), (byte) 126);
+                watcher.set(new EntityDataAccessor<>(Avatar.DATA_PLAYER_MODE_CUSTOMISATION.id(), EntityDataSerializers.BYTE), (byte) 126);
                 break;
             case 3:
-                watcher.set(new EntityDataAccessor<>(17, EntityDataSerializers.BYTE), (byte) 127);
+                watcher.set(new EntityDataAccessor<>(Avatar.DATA_PLAYER_MODE_CUSTOMISATION.id(), EntityDataSerializers.BYTE), (byte) 127);
                 break;
             default:
                 break;
