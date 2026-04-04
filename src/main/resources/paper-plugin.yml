@@ -4,7 +4,7 @@ author: Pascalpex
 prefix: PexNPC
 main: de.pascalpex.pexnpc.PexNPC
 description: Lightweight, packet based NPC plugin with fast updates
-api-version: '1.21.11'
+api-version: '26.1'
 bootstrapper: de.pascalpex.pexnpc.PexNPCBootstrap
 loader: de.pascalpex.pexnpc.PexNPCLoader
 dependencies:
