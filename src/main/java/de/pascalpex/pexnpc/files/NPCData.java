@@ -94,6 +94,7 @@ public class NPCData {
     public static NPC getNpc(long id) {
         String worldName = config.getString("npcs" + "." + id + ".location" + ".world");
         if (worldName == null) {
+            PexNPC.logger().warning("Could not load NPC with ID " + id + ": empty world name");
             return null;
         }
         World world = Bukkit.getWorld(worldName);
@@ -105,6 +106,7 @@ public class NPCData {
         Location loc = new Location(world, x, y, z, yaw, pitch);
 
         if (world == null) {
+            PexNPC.logger().warning("Could not load NPC with ID " + id + ": invalid world");
             return null;
         }
 

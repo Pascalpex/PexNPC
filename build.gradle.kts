@@ -1,10 +1,10 @@
 plugins {
     id("java")
-    id("io.papermc.paperweight.userdev") version "2.0.0-beta.19"
+    id("io.papermc.paperweight.userdev") version "2.0.0-beta.21"
 }
 
 group = "de.pascalpex"
-version = "2.2"
+version = "2.3"
 
 repositories {
     mavenCentral()
@@ -16,14 +16,14 @@ repositories {
 }
 
 dependencies {
-    testImplementation(platform("org.junit:junit-bom:5.13.4"))
+    testImplementation(platform("org.junit:junit-bom:6.0.3"))
     testImplementation("org.junit.jupiter:junit-jupiter")
-    compileOnly("me.clip:placeholderapi:2.11.6")
-    paperweight.paperDevBundle("1.21.9-R0.1-SNAPSHOT")
+    compileOnly("me.clip:placeholderapi:2.12.2")
+    paperweight.paperDevBundle("26.1.1.build.+")
 }
 
 java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
+    toolchain.languageVersion.set(JavaLanguageVersion.of(25))
 }
 
 tasks.assemble {

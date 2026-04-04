@@ -35,8 +35,15 @@ public class NPCSlotArgument implements CustomArgumentType.Converted<NPCItemSlot
 
     @Override
     public <S> @NotNull CompletableFuture<Suggestions> listSuggestions(@NotNull CommandContext<S> context, @NotNull SuggestionsBuilder builder) {
+        String currentInput = "";
+        try {
+            currentInput = context.getInput().split(" ")[3].toUpperCase();
+        } catch (ArrayIndexOutOfBoundsException ignored) {
+        } // Command does not contain the argument yet
         for (NPCItemSlot slot : NPCItemSlot.values()) {
-            builder.suggest(slot.getName());
+            if (slot.getName().startsWith(currentInput)) {
+                builder.suggest(slot.getName());
+            }
         }
         return builder.buildFuture();
     }
