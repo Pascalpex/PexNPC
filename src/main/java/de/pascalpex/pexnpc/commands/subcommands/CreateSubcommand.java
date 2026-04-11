@@ -27,7 +27,7 @@ public class CreateSubcommand implements Command<CommandSourceStack> {
         }
 
         String name = StringArgumentType.getString(context, "name").replace("&", "§");
-        if (Util.isNameInvalid(name)) {
+        if (Util.isNameInvalid(name, -1)) {
             sender.sendMessage(MessageHandler.errorMessage("The first 16 characters of this name are already in use"));
             return SINGLE_SUCCESS;
         }

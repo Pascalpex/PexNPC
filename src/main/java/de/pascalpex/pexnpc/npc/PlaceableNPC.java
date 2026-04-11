@@ -62,7 +62,6 @@ public class PlaceableNPC {
 
         GameProfile gameProfile = new GameProfile(UUID.randomUUID(), actualName, new PropertyMap(profileProperties));
 
-
         Location loc = npc.getLocation();
         MinecraftServer server = ((CraftServer) Bukkit.getServer()).getServer();
         ServerLevel world = ((CraftWorld) loc.getWorld()).getHandle();
@@ -70,6 +69,10 @@ public class PlaceableNPC {
         serverPlayer.setPos(loc.getX(), loc.getY(), loc.getZ());
         serverPlayer.setYRot(loc.getYaw());
         serverPlayer.setXRot(loc.getPitch());
+
+        serverPlayer.setGlowingTag(npc.isGlowing());
+        serverPlayer.setSharedFlagOnFire(npc.isBurning());
+        serverPlayer.setPose(npc.getPose().getMcPose());
 
         SynchedEntityData watcher = serverPlayer.getEntityData();
         int skinMode = Config.getSkinMode();

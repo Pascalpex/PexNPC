@@ -1,8 +1,11 @@
 package de.pascalpex.pexnpc;
 
+import com.mojang.brigadier.arguments.BoolArgumentType;
+import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import de.pascalpex.pexnpc.commands.IDArgument;
+import de.pascalpex.pexnpc.commands.NPCPoseArgument;
 import de.pascalpex.pexnpc.commands.NPCSlotArgument;
 import de.pascalpex.pexnpc.commands.subcommands.*;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
@@ -82,6 +85,22 @@ public class PexNPCBootstrap implements PluginBootstrap {
                                     .executes(new ClearSubcommand())))
                     .then(Commands.literal("inspect")
                             .executes(new InspectSubcommand()))
+                    .then(Commands.literal("scale")
+                            .then(Commands.argument("npc", idArgument)
+                                    .then(Commands.argument("scale", DoubleArgumentType.doubleArg())
+                                            .executes(new ScaleSubcommand()))))
+                    .then(Commands.literal("burning")
+                            .then(Commands.argument("npc", idArgument)
+                                    .then(Commands.argument("burning", BoolArgumentType.bool())
+                                            .executes(new BurningSubcommand()))))
+                    .then(Commands.literal("glowing")
+                            .then(Commands.argument("npc", idArgument)
+                                    .then(Commands.argument("glowing", BoolArgumentType.bool())
+                                            .executes(new GlowingSubcommand()))))
+                    .then(Commands.literal("pose")
+                            .then(Commands.argument("npc", idArgument)
+                                    .then(Commands.argument("pose", new NPCPoseArgument())
+                                            .executes(new PoseSubcommand()))))
                     .executes(helpSubcommand)
                     .build();
 

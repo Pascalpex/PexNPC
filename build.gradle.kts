@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "de.pascalpex"
-version = "2.3"
+version = "2.4"
 
 repositories {
     mavenCentral()
@@ -19,7 +19,7 @@ dependencies {
     testImplementation(platform("org.junit:junit-bom:6.0.3"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     compileOnly("me.clip:placeholderapi:2.12.2")
-    paperweight.paperDevBundle("26.1.1.build.+")
+    paperweight.paperDevBundle("26.1.2.build.+")
 }
 
 java {

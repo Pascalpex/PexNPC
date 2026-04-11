@@ -22,5 +22,5 @@ jobs:
         uses: actions/upload-artifact@v7.0.0
         with:
           name: PexNPC
-          path: build/libs/PexNPC-2.3.jar
+          path: build/libs/PexNPC-2.4.jar
           archive: false

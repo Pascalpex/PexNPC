@@ -24,6 +24,11 @@ public class NPC {
 
     private NPCEquipment equipment;
 
+    private double scale;
+    private boolean burning;
+    private boolean glowing;
+    private NPCPose pose;
+
     public NPC(Location location, String name, String skinName, Player fallbackSkin) {
         this.location = location;
         this.name = name;
@@ -32,6 +37,10 @@ public class NPC {
 
         command = "";
         message = "";
+        scale = 1.0;
+        burning = false;
+        glowing = false;
+        pose = NPCPose.STANDING;
 
         equipment = new NPCEquipment();
 
@@ -42,7 +51,7 @@ public class NPC {
         }
     }
 
-    public NPC(long id, Location location, String name, NPCSkin skin, String command, String message, NPCEquipment equipment) {
+    public NPC(long id, Location location, String name, NPCSkin skin, String command, String message, NPCEquipment equipment, double scale, boolean burning, boolean glowing, NPCPose pose) {
         this.id = id;
         this.location = location;
         this.name = name;
@@ -50,6 +59,10 @@ public class NPC {
         this.command = command;
         this.message = message;
         this.equipment = equipment;
+        this.scale = scale;
+        this.burning = burning;
+        this.glowing = glowing;
+        this.pose = pose;
     }
 
     public long getId() {
@@ -106,6 +119,38 @@ public class NPC {
 
     public void setEquipment(NPCEquipment equipment) {
         this.equipment = equipment;
+    }
+
+    public double getScale() {
+        return scale;
+    }
+
+    public void setScale(double scale) {
+        this.scale = scale;
+    }
+
+    public boolean isBurning() {
+        return burning;
+    }
+
+    public void setBurning(boolean burning) {
+        this.burning = burning;
+    }
+
+    public boolean isGlowing() {
+        return glowing;
+    }
+
+    public void setGlowing(boolean glowing) {
+        this.glowing = glowing;
+    }
+
+    public NPCPose getPose() {
+        return pose;
+    }
+
+    public void setPose(NPCPose pose) {
+        this.pose = pose;
     }
 
     public boolean hasItems() {

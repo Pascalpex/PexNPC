@@ -32,6 +32,11 @@ public class HelpSubcommand implements Command<CommandSourceStack> {
         sender.sendMessage(MessageHandler.prefixedMini("/pexnpc clear [ID] <dark_gray>| <gold>Clears the command, message and items of a NPC").hoverEvent(hoverEvent).clickEvent(ClickEvent.suggestCommand("/pexnpc clear")));
         sender.sendMessage(MessageHandler.prefixedMini("/pexnpc tp [ID] <dark_gray>| <gold>Teleports to a NPC").hoverEvent(hoverEvent).clickEvent(ClickEvent.suggestCommand("/pexnpc tp")));
         sender.sendMessage(MessageHandler.prefixedMini("/pexnpc inspect <dark_gray>| <gold>Toggles the inspection mode").hoverEvent(hoverEvent).clickEvent(ClickEvent.suggestCommand("/pexnpc inspect")));
+        sender.sendMessage(MessageHandler.prefixedMini("/pexnpc scale [ID] [SCALE] <dark_gray>| <gold>Sets the scale").hoverEvent(hoverEvent).clickEvent(ClickEvent.suggestCommand("/pexnpc scale")));
+        sender.sendMessage(MessageHandler.prefixedMini("/pexnpc burning [ID] [BURNING] <dark_gray>| <gold>Turns burning on or off").hoverEvent(hoverEvent).clickEvent(ClickEvent.suggestCommand("/pexnpc burning")));
+        sender.sendMessage(MessageHandler.prefixedMini("/pexnpc glowing [ID] [GLOWING] <dark_gray>| <gold>Turns glowing on or off").hoverEvent(hoverEvent).clickEvent(ClickEvent.suggestCommand("/pexnpc glowing")));
+        sender.sendMessage(MessageHandler.prefixedMini("/pexnpc pose [ID] [POSE] <dark_gray>| <gold>Changes the pose").hoverEvent(hoverEvent).clickEvent(ClickEvent.suggestCommand("/pexnpc pose")));
+
         return SINGLE_SUCCESS;
     }
 }

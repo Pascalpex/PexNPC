@@ -1,10 +1,7 @@
 package de.pascalpex.pexnpc.files;
 
 import de.pascalpex.pexnpc.PexNPC;
-import de.pascalpex.pexnpc.npc.NPC;
-import de.pascalpex.pexnpc.npc.NPCEquipment;
-import de.pascalpex.pexnpc.npc.NPCItemSlot;
-import de.pascalpex.pexnpc.npc.NPCSkin;
+import de.pascalpex.pexnpc.npc.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -76,6 +73,10 @@ public class NPCData {
         config.set("npcs" + "." + id + ".items" + ".BOOTS", npc.getEquipment().getItem(NPCItemSlot.BOOTS));
         config.set("npcs" + "." + id + ".skin" + ".texture", npc.getSkin().texture());
         config.set("npcs" + "." + id + ".skin" + ".signature", npc.getSkin().signature());
+        config.set("npcs" + "." + id + ".scale", npc.getScale());
+        config.set("npcs" + "." + id + ".burning", npc.isBurning());
+        config.set("npcs" + "." + id + ".glowing", npc.isGlowing());
+        config.set("npcs" + "." + id + ".pose", npc.getPose().getMcPose().id());
         save();
     }
 
@@ -128,7 +129,13 @@ public class NPCData {
         NPCSkin skin = new NPCSkin(skinTexture, skinSignature);
         NPCEquipment equipment = new NPCEquipment(handItem, offhandItem, helmetItem, chestplateItem, leggingsItem, bootsItem);
 
-        return new NPC(id, loc, name, skin, cmd, msg, equipment);
+        double scale = config.getDouble("npcs" + "." + id + ".scale", 1.0);
+        boolean burning = config.getBoolean("npcs" + "." + id + ".burning", false);
+        boolean glowing = config.getBoolean("npcs" + "." + id + ".glowing", false);
+        int poseId = config.getInt("npcs" + "." + id + ".pose", NPCPose.STANDING.getMcPose().id());
+        NPCPose pose = NPCPose.fromId(poseId);
+
+        return new NPC(id, loc, name, skin, cmd, msg, equipment, scale, burning, glowing, pose);
     }
 
     public static List<NPC> getAllNpcs() {
